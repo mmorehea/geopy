@@ -1,3 +1,13 @@
+#                              _
+#                             | |
+#  __ _  ___  ___  _ __  _   _| |
+# / _` |/ _ \/ _ \| '_ \| | | | |
+#| (_| |  __/ (_) | |_) | |_| |_|
+# \__, |\___|\___/| .__/ \__, (_)
+#  __/ |          | |     __/ |
+# |___/           |_|    |___/
+
+
 import os
 import sys
 import code
@@ -32,6 +42,22 @@ for each in lines:
 		dists.append(each)
 
 listOfDists.append(dists)
+
+totalDists = open('totalDists.txt', 'w')
+
+for ii, each in enumerate(listOfDists):
+	with open('temp.txt', 'w') as w:
+		for line in each:
+			w.write(line)
+	s = '(cat ../prelude.ps; cat ./temp.txt | ../efst | ../bb) > ./' + folder + '/' + str(ii) + '.ps'
+	with open('./' + folder + '/' + str(ii) + '.ps', 'r') as r:
+		lines = r.readlines()
+	for line in lines:
+		if '(Euclidean SMT:' in line:
+			totalDists.write(line)
+
+totalDists.close()
+
 
 
 code.interact(local=locals())
