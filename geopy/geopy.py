@@ -43,14 +43,15 @@ for each in lines:
 
 listOfDists.append(dists)
 
-totalDists = open('totalDists.txt', 'w')
+totalDists = open('totalDists_' + folderName + '.txt', 'w')
 
 for ii, each in enumerate(listOfDists):
 	with open('temp.txt', 'w') as w:
 		for line in each:
 			w.write(line)
-	s = '(cat ../prelude.ps; cat ./temp.txt | ../efst | ../bb) > ./' + folder + '/' + str(ii) + '.ps'
-	with open('./' + folder + '/' + str(ii) + '.ps', 'r') as r:
+	s = '(cat ../prelude.ps; cat ./temp.txt | ../efst | ../bb) > ./' + folderName + '/' + str(ii) + '.ps'
+	subprocess.call(s, shell=True)
+	with open('./' + folderName + '/' + str(ii) + '.ps', 'r') as r:
 		lines = r.readlines()
 	for line in lines:
 		if '(Euclidean SMT:' in line:
