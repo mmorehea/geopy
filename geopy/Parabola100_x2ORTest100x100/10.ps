@@ -1,0 +1,769 @@
+%!PS-Adobe-3.0
+%%Creator: Steiner Tree Version 4.0
+%%Copyright: Copyright (c) 1998, 2016 by David M. Warme. This work is licensed under a Creative Commons Attribution 4.0 International License.
+%%LanguageLevel: 1
+%%DocumentNeededResources: font Times-Roman
+%%DocumentSuppliedResources: procset SteinerTreeProcs 2.0 0
+%%EndComments
+%%BeginProlog
+%%BeginProcSet: SteinerTreeProcs 2.0 0
+/LabelTerminals	0		def	% set non-zero to label terminals
+/inch { 72 mul } def
+/PaperWidth	8.5 inch	def
+/PaperHeight	11 inch		def
+/BigBoxSize	7 inch		def
+/SmallBoxSize	2 inch		def
+/SmallBoxHeight	SmallBoxSize	def
+/SmallBoxWidth	SmallBoxSize	def
+/BoxHeight	BigBoxSize	def
+/BoxWidth	BigBoxSize	def
+/MinX		0		def
+/MaxX		1		def
+/MinY		0		def
+/MaxY		1		def
+/BoxMode	0		def	% (0 ==> big plot, 1 ==> small plots)
+/SmallBoxCount	0		def
+/TermRadius	1 32 div inch	def
+/LineWidth	currentlinewidth	def
+
+% Define the clipping region to be the inside edge of the box.
+
+/ClipHeight	BigBoxSize LineWidth sub def
+/ClipWidth	ClipHeight def
+
+% Define the plotting region so that points plotted at the extremes will
+% exactly meet the edge of the clipping region.  (Reduce by the terminal
+% radius on each side.)
+
+/PlotHeight	ClipHeight TermRadius 2 mul sub def
+/PlotWidth	ClipWidth  TermRadius 2 mul sub	def
+/XlateX { MinX sub MaxX MinX sub div PlotWidth mul } def
+/XlateY { MinY sub MaxY MinY sub div PlotHeight mul } def
+/XlateXY { exch XlateX exch XlateY } def
+/Dup2 { dup 3 -1 roll dup 4 1 roll exch } def
+/Swap2 { 4 2 roll } def
+% define the two fonts we will use:
+%	- one for numbering the terminals
+%	- one for printing the plot's title
+/TermNumPointsize	8	def
+/TitlePointsize		15	def
+/TermNumFont
+	/Times-Roman findfont TermNumPointsize scalefont
+def
+/UseTermNumFont { TermNumFont setfont } def
+/TitleFont
+	/Times-Roman findfont TitlePointsize scalefont
+def
+/UseTitleFont { TitleFont setfont } def
+/DefineTerminals {
+	/NumTerms exch def
+	/TermX NumTerms array def
+	/TermY NumTerms array def
+	/TermIndex 0 def
+} def
+/DT {
+	TermY TermIndex 3 -1 roll put
+	TermX TermIndex 3 -1 roll put
+	/TermIndex TermIndex 1 add def
+} def
+/SetAxes {	% minx maxx miny maxy
+	/MaxY exch def
+	/MinY exch def
+	/MaxX exch def
+	/MinX exch def
+} def
+/PTString	12 string	def
+/Plot_Terminals {
+	LabelTerminals 0 eq {
+		% Display terminals, no labels
+		0 1 NumTerms 1 sub {			% i
+			dup				% i i
+			TermX exch get exch		% x i
+			TermY exch get
+			newpath
+			XlateXY
+			TermRadius 0 360 arc fill
+		} for
+	}
+	{	% Display terminals, with labels
+		0 1 NumTerms 1 sub {			% i
+			dup				% i i
+			PTString cvs exch dup		% str i i
+			TermX exch get exch		% str x i
+			TermY exch get			% str x y
+			newpath
+			XlateXY
+			Dup2
+			TermRadius 0 360 arc fill
+			moveto TermRadius 3 mul dup neg rmoveto
+			UseTermNumFont
+			show
+		} for
+	} ifelse
+} def
+% n T ==> Xn Yn, get coordinates of terminal n.
+/T {
+	dup
+	TermX exch get exch
+	TermY exch get
+} def
+% Draw a line segment.
+/S {
+	newpath
+	XlateXY
+	moveto
+	XlateXY
+	lineto
+	stroke
+} def
+% Draw a corner.  First point is incident to vertical segment.
+% Second point is incident to horizontal segment.
+/C {	% x1 y1 x2 y2
+	newpath
+	% x1 y1 x2 y2 -> x1 y1 x1 y2 x2 y2
+	4 -1 roll dup 5 1 roll exch dup 4 -1 roll exch
+	XlateXY
+	moveto
+	XlateXY
+	lineto
+	XlateXY
+	lineto
+	stroke
+} def
+/BeginPlot {
+	FlushSmallPlot
+	gsave
+	PaperWidth BoxWidth sub 2 div
+	 PaperHeight BoxHeight sub 2 div
+	  translate
+	newpath
+	0 0 moveto
+	BoxWidth 0 lineto
+	BoxWidth BoxHeight lineto
+	0 BoxHeight lineto
+	closepath
+	stroke
+	gsave
+	% establish a clipping region at the inside edge of the box
+	LineWidth 2 div dup moveto
+	ClipWidth 0 rlineto
+	0 ClipHeight rlineto
+	ClipWidth neg 0 rlineto
+	closepath
+	clip
+	% establish the origin for the plotting region
+	LineWidth 2 div TermRadius add
+	 dup
+	  translate
+} def
+/EndPlot {
+	grestore
+	newpath
+	UseTitleFont
+	0 0 moveto
+		dup stringwidth pop BigBoxSize exch sub 2 div
+		TitlePointsize -2 mul
+	rmoveto
+	show
+	grestore
+	showpage
+} def
+/BeginSmallPlot {
+	gsave
+	.75 inch SmallBoxCount 3 mod SmallBoxWidth .5 inch add mul add
+	  .75 inch 3 SmallBoxCount 3 idiv sub SmallBoxHeight .5 inch add mul add
+	    translate
+	SmallBoxWidth BoxWidth div
+	 SmallBoxHeight BoxHeight div
+	  scale
+	newpath
+	0 0 moveto
+	BoxWidth 0 lineto
+	BoxWidth BoxHeight lineto
+	0 BoxHeight lineto
+	closepath
+	stroke
+	gsave
+	% establish a clipping region at the inside edge of the box
+	LineWidth 2 div dup moveto
+	ClipWidth 0 rlineto
+	0 ClipHeight rlineto
+	ClipWidth neg 0 rlineto
+	closepath
+	clip
+	% establish the origin for the plotting region
+	LineWidth 2 div TermRadius add
+	 dup
+	  translate
+} def
+/EndSmallPlot2 {
+	grestore
+	newpath
+	UseTitleFont
+	0 0 moveto
+		dup stringwidth pop BigBoxSize exch sub 2 div
+		TitlePointsize -2 mul
+	rmoveto
+	show
+	grestore
+	/SmallBoxCount SmallBoxCount 1 add def
+	SmallBoxCount 12 ge {
+		FlushSmallPlot
+	} if
+} def
+/FlushSmallPlot {
+	SmallBoxCount 0 gt {
+		showpage
+		/SmallBoxCount	0 def
+	} if
+} def
+/PT {
+	dup				% i i
+	TermX exch get exch		% x i
+	TermY exch get
+	newpath
+	XlateXY
+	TermRadius 0 360 arc fill
+} def
+%%EndProcSet
+%%EndProlog
+
+ % ../bb
+ % Args:
+ % Phase 1: 0.39 seconds
+
+%%BeginSetup
+
+-10 10 -10 10 SetAxes
+
+100 DefineTerminals
+	3.389203328232621	4.983273504714935	DT
+	7.041208359795923	-.0698542310734175	DT
+	4.389145227909811	6.258437863827610	DT
+	2.686834902186646	-2.932762877722882	DT
+	1.978366109417331	-7.037998417720180	DT
+	-4.980817025463490	2.343358650186672	DT
+	.5416709408359992	5.031252733632857	DT
+	-7.150659286785570	2.333899732865772	DT
+	-1.524238796126615	4.371160093369203	DT
+	1.128970628050666	-8.583310441091473	DT
+	-7.048974609814365	2.708875251098648	DT
+	.1294123989333062	-2.622786964370176	DT
+	3.536800470195305	-4.318867992550556	DT
+	7.885597435564635	2.180819664371542	DT
+	-7.373781786986838	-3.955228271398543	DT
+	-3.358413568750138	5.447670701878135	DT
+	2.136370918267196	4.439989378424165	DT
+	-8.225324739289093	4.101180572559942	DT
+	5.310061698543160	-3.879021666595674	DT
+	-1.693816609284276	-8.664207359135826	DT
+	1.978591533965414	2.365989220474355	DT
+	-5.706716821409401	6.937231589851161	DT
+	.6070986462919875	-.9409450569034198	DT
+	-5.541114520116043	-1.650144934387965	DT
+	5.191414802720781	1.738039251864913	DT
+	5.857472696126028	-7.232241353400597	DT
+	9.328221787117085	-.1501331692767209	DT
+	-5.086370820764953	4.980977558816693	DT
+	-2.295198514298737	6.991598819030877	DT
+	1.294946816075670	-5.463651404929193	DT
+	-3.483962766082980	-5.004288177960800	DT
+	-1.184543428957198	6.420610786155563	DT
+	-3.712511263082376	2.292898702036385	DT
+	4.050681904517061	-1.395718179623058	DT
+	-1.332490119930124	4.428557405650161	DT
+	-3.802914723966090	3.777175012068594	DT
+	5.680076969425031	-.1032074358420267	DT
+	-.5544502575782424	-3.867023539831596	DT
+	7.541710985521320	3.910911327733690	DT
+	.2829488198007652	-6.493476900871717	DT
+	-4.779654967787946	-4.607065733447221	DT
+	-9.014670706868162	2.762683422911571	DT
+	-.0019921691891902	-1.181831468507578	DT
+	-2.912206210544077	4.086615318823475	DT
+	-2.402104606938656	-.5368727252131134	DT
+	-4.141758914306706	.5771212318862595	DT
+	8.926677692183105	4.207656175499490	DT
+	-4.109761284638853	-5.386306389051122	DT
+	1.870639918370230	-9.109313679424417	DT
+	1.543014256690789	3.983960980146326	DT
+	-9.013182793680706	2.392921356331216	DT
+	2.491211338935052	9.158391994808405	DT
+	1.404693623962085	-2.002189229818737	DT
+	5.947947034357410	2.903795971696750	DT
+	-6.773420192342342	.0831801407267445	DT
+	-4.111222062183318	-4.661013900093281	DT
+	4.308920646194461	3.622237517565128	DT
+	-2.508823061613285	-5.083503107097740	DT
+	.5869503006127700	-6.246591628484007	DT
+	3.695594463654974	7.865994856980051	DT
+	2.153777438352648	2.968865181439891	DT
+	4.576476507397788	-7.767545945542206	DT
+	.4319931515123407	3.277096494634788	DT
+	-1.060450820032428	-1.795014392327329	DT
+	-5.310939427525013	-7.940696852388985	DT
+	-1.490565102802719	-2.788100209831229	DT
+	6.178117199600738	5.528018244589443	DT
+	-6.128077935265487	-3.825949748088188	DT
+	-4.380605034293843	-8.320324635421443	DT
+	-1.224066992076940	-2.596447994938257	DT
+	3.471522071911758	-7.737541808008793	DT
+	.1818832089529731	-.9185488951858893	DT
+	-1.915238557148485	-.4639120303376014	DT
+	-3.462023792634480	-.4863413551493404	DT
+	2.436535706031170	4.450900431203222	DT
+	.0098517103362283	5.465667619486161	DT
+	5.036298356125924	1.991702723649659	DT
+	8.345213676568143	2.396208428325603	DT
+	-3.034860019730027	9.956683830911220	DT
+	9.658682336687181	7.624690984235687	DT
+	1.847289577799245	.3042994193723931	DT
+	-3.601913190262781	-1.726284116625397	DT
+	7.840696964764920	-7.687656193934301	DT
+	-3.359258871675051	-7.518011639513970	DT
+	1.436801870917348	5.779865247154061	DT
+	-4.581187590458684	-1.420948231100583	DT
+	5.158282448430274	9.453236930168500	DT
+	-1.095015619459623	.6844695013631767	DT
+	5.769645638637495	-2.713484584522187	DT
+	8.673038030197193	9.096356418652276	DT
+	-8.336340807473138	-9.017162750613893	DT
+	-3.985980693327988	-9.312436218254561	DT
+	-9.364999757613901	6.358204004371760	DT
+	4.440018048146824	-4.002136925862477	DT
+	3.436708804107976	-2.490731787060240	DT
+	-1.196405946853836	-9.786370440955431	DT
+	-4.234791154452680	-3.704930234816812	DT
+	5.944937131773507	-1.704161248313361	DT
+	-1.189266229120267	9.865198542707577	DT
+	1.270989772081298	-8.036327719024550	DT
+
+%%EndSetup
+
+ % _gst_initialize_constraint_pool: 0.00 seconds.
+ % Constraint pool initialized with:
+ % 	1	Total degree rows	252	coeffs.
+ % 	100	Cutset rows		720	coeffs.
+ % 	0	Incompatibility rows	0	coeffs.
+ % 	186	2-terminal SEC rows	687	coeffs.
+ % 	285	Total rows in pool	101	in LP
+ % @PMEM 285 rows, 1 blocks, 4697 nzfree, 0 nzwasted, 6636 nztotal
+ % _gst_build_initial_formulation: 0.00 seconds.
+% Resuming node 0
+ % @PAP adding 101 rows, 972 nz to LP
+  % @PL 101 rows, 252 cols, 1224 nonzeros, 43 slack, 58 tight.
+  % @PAP adding 30 rows, 127 nz to LP
+  % @PL 131 rows, 252 cols, 1351 nonzeros, 40 slack, 91 tight.
+  % @PAP adding 20 rows, 98 nz to LP
+  % @PL 151 rows, 252 cols, 1449 nonzeros, 48 slack, 103 tight.
+  % @PAP adding 14 rows, 79 nz to LP
+  % @PL 165 rows, 252 cols, 1528 nonzeros, 52 slack, 113 tight.
+  % @PAP adding 10 rows, 47 nz to LP
+  % @PL 175 rows, 252 cols, 1575 nonzeros, 49 slack, 126 tight.
+  % @PAP adding 9 rows, 35 nz to LP
+  % @PL 184 rows, 252 cols, 1610 nonzeros, 52 slack, 132 tight.
+  % @PAP adding 2 rows, 8 nz to LP
+  % @PL 186 rows, 252 cols, 1618 nonzeros, 54 slack, 132 tight.
+  % @PAP adding 2 rows, 9 nz to LP
+  % @PL 188 rows, 252 cols, 1627 nonzeros, 56 slack, 132 tight.
+  % Node 0 LP 1 Solution, length = 12249873917999248.000000, 0.00 0
+ % 0 fractional variables
+ % @LO 0.00 122.49873917999248362776 99.9000000000
+ % @LN 0.00 122.49873917999248362776 99.9000000000
+ % @UO 0.00 131.33635966757515234349 6.7289975982
+ % @UN 0.00 131.33635966757515234349 6.7289975982
+ % @cutset: 9 connected components.
+ % initially 29 congested vertices:
+ % _gst_find_congested_components found 5 components:
+ % 	component 0:	5 verts,	5 edges
+ % 	component 1:	8 verts,	7 edges
+ % 	component 2:	3 verts,	3 edges
+ % 	component 3:	3 verts,	3 edges
+ % 	component 4:	3 verts,	3 edges
+ % @D deleting 56 slack rows
+ % @PAP adding 82 rows, 1842 nz to LP
+ % @PMEM 367 rows, 1 blocks, 2773 nzfree, 0 nzwasted, 6636 nztotal
+  % @PL 214 rows, 252 cols, 2990 nonzeros, 65 slack, 149 tight.
+  % @PAP adding 7 rows, 18 nz to LP
+  % @PL 221 rows, 252 cols, 3008 nonzeros, 61 slack, 160 tight.
+  % @PAP adding 4 rows, 15 nz to LP
+  % @PL 225 rows, 252 cols, 3023 nonzeros, 61 slack, 164 tight.
+  % Node 0 LP 2 Solution, length = 12863994384411114.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 82
+ % 5 fractional variables
+ % @LO 0.00 122.49873917999248362776 6.7289975982
+ % @LN 0.00 128.63994384411114424438 2.0530611860
+ % @UO 0.00 131.33635966757515234349 2.0530611860
+ % @UN 0.00 130.30888097390626967353 1.2807547094
+ % Fixed 0 vars to 0 and 1 vars to 1.
+ % @cutset: 4 connected components.
+ % initially 28 congested vertices:
+ % _gst_find_congested_components found 4 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	3 verts,	3 edges
+ % 	component 2:	3 verts,	3 edges
+ % 	component 3:	3 verts,	4 edges
+ % @D deleting 61 slack rows
+ % @PAP adding 11 rows, 271 nz to LP
+ % @PMEM 378 rows, 1 blocks, 2491 nzfree, 0 nzwasted, 6636 nztotal
+  % @PL 175 rows, 252 cols, 2142 nonzeros, 7 slack, 168 tight.
+  % @PAP adding 1 rows, 3 nz to LP
+  % @PL 176 rows, 252 cols, 2145 nonzeros, 7 slack, 169 tight.
+  % Node 0 LP 3 Solution, length = 12921283963023740.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 11
+ % 4 fractional variables
+ % @LO 0.00 128.63994384411114424438 1.2807547094
+ % @LN 0.00 129.21283963023739715936 0.8411102417
+ % Fixed 1 vars to 0 and 2 vars to 1.
+ % @cutset: 2 connected components.
+ % initially 29 congested vertices:
+ % _gst_find_congested_components found 4 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	5 verts,	5 edges
+ % 	component 2:	3 verts,	3 edges
+ % 	component 3:	3 verts,	3 edges
+ % @D deleting 7 slack rows
+ % @PAP adding 9 rows, 88 nz to LP
+ % @PMEM 387 rows, 1 blocks, 2394 nzfree, 0 nzwasted, 6636 nztotal
+  % @PL 178 rows, 252 cols, 2182 nonzeros, 3 slack, 175 tight.
+  % @PAP adding 1 rows, 5 nz to LP
+  % @PL 179 rows, 252 cols, 2187 nonzeros, 4 slack, 175 tight.
+  % Node 0 LP 4 Solution, length = 12933919746140956.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 9
+ % 13 fractional variables
+ % @LO 0.00 129.21283963023739715936 0.8411102417
+ % @LN 0.00 129.33919746140955453484 0.7441423065
+ % @cutset: 2 connected components.
+ % initially 26 congested vertices:
+ % _gst_find_congested_components found 3 components:
+ % 	component 0:	4 verts,	5 edges
+ % 	component 1:	5 verts,	5 edges
+ % 	component 2:	3 verts,	3 edges
+ % @D deleting 4 slack rows
+ % @PAP adding 8 rows, 152 nz to LP
+ % @PMEM 395 rows, 1 blocks, 2234 nzfree, 0 nzwasted, 6636 nztotal
+  % @PL 183 rows, 252 cols, 2316 nonzeros, 3 slack, 180 tight.
+  % @PAP adding 1 rows, 29 nz to LP
+  % @PL 184 rows, 252 cols, 2345 nonzeros, 3 slack, 181 tight.
+  % Node 0 LP 5 Solution, length = 12968153259195298.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 8
+ % 0 fractional variables
+ % @LO 0.01 129.33919746140955453484 0.7441423065
+ % @LN 0.01 129.68153259195298687700 0.4814317929
+ % @UO 0.01 130.30888097390626967353 0.4814317929
+ % @UN 0.01 130.13049214711170975534 0.3450071907
+ % Fixed 4 vars to 0 and 5 vars to 1.
+ % @cutset: 2 connected components.
+ % initially 4 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	3 verts,	3 edges
+ % @D deleting 3 slack rows
+ % @PAP adding 2 rows, 59 nz to LP
+ % @PMEM 397 rows, 1 blocks, 2173 nzfree, 0 nzwasted, 6636 nztotal
+  % @PL 183 rows, 252 cols, 2316 nonzeros, 9 slack, 174 tight.
+  % @PAP adding 3 rows, 102 nz to LP
+  % @PL 186 rows, 252 cols, 2418 nonzeros, 7 slack, 179 tight.
+  % Node 0 LP 6 Solution, length = 12992725028880530.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 1 fractional variables
+ % @LO 0.01 129.68153259195298687700 0.3450071907
+ % @LN 0.01 129.92725028880531112918 0.1561831166
+ % Fixed 9 vars to 0 and 2 vars to 1.
+ % @cutset: 2 connected components.
+ % initially 13 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	3 verts,	3 edges
+ % @D deleting 7 slack rows
+ % @PAP adding 3 rows, 164 nz to LP
+ % @PMEM 400 rows, 1 blocks, 2006 nzfree, 0 nzwasted, 6636 nztotal
+  % @PL 182 rows, 252 cols, 2382 nonzeros, 4 slack, 178 tight.
+  % Node 0 LP 7 Solution, length = 12994815419011140.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 5 fractional variables
+ % @LO 0.01 129.92725028880531112918 0.1561831166
+ % @LN 0.01 129.94815419011140988914 0.1401193171
+ % @UO 0.01 130.13049214711170975534 0.1401193171
+ % @UN 0.01 130.05817953001417208725 0.0845970167
+ % Fixed 33 vars to 0 and 4 vars to 1.
+ % initially 5 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	5 verts,	6 edges
+ % @D deleting 4 slack rows
+ % @PAP adding 1 rows, 16 nz to LP
+ % @PMEM 401 rows, 1 blocks, 1989 nzfree, 0 nzwasted, 6636 nztotal
+  % @PL 179 rows, 252 cols, 2300 nonzeros, 1 slack, 178 tight.
+  % Node 0 LP 8 Solution, length = 13001062949091948.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 6 fractional variables
+ % @LO 0.01 129.94815419011140988914 0.0845970167
+ % @LN 0.01 130.01062949091948439673 0.0365605910
+ % Fixed 38 vars to 0 and 4 vars to 1.
+ % initially 21 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	13 verts,	12 edges
+ % Enumerating 13 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 17 nz to LP
+ % @PMEM 402 rows, 1 blocks, 1971 nzfree, 0 nzwasted, 6636 nztotal
+  % @PL 179 rows, 252 cols, 2308 nonzeros, 1 slack, 178 tight.
+  % Node 0 LP 9 Solution, length = 13003420728039916.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 0 fractional variables
+ % @UO 0.01 130.05817953001417208725 0.0365605910
+ % @UN 0.01 130.03420728039915843510 0.0181319900
+ % *     0     013003420728039916.000013003420728039916.0000
+% @LO 0.01 130.01062949091948439673 0.0181319900
+% @LN 0.01 130.03420728039915843510 0.0000000000
+
+ % Certificate of solution:
+ % @C	-6.485715161514677	1.783763436344760
+ % @C	-.6804404944931978	5.485739011782952
+ % @C	6.119153134021945	-.4447190259073193
+ % @C	.8450682650440835	-5.542007257527299
+ % @C	8.841432004419536	4.289311465920476
+ % @C	-3.901316553431501	-5.011152993863142
+ % @C	1.189235714870117	-8.560023232373977
+ % @C	.9358759430505029	-.9726959816096650
+ % @C	-4.362394740443038	-4.452594978404085
+ % @C	5.226652360681727	2.708737898046011
+ % @C	3.673316999911673	8.527936518072150
+ % @C	-3.262478143084291	-.7118971211137328
+ % @C	-3.985480725370734	-1.882882405365346
+ % @C	5.307313287689262	-3.875542140980606
+ % @C	-8.214001524900473	3.239078910950904
+ % @C	-7.154757688031380	2.645934673006643
+ % @C	-2.107369201641514	9.377076874785023
+ % @C	-2.188779992055832	7.048177643116820
+ % @C	-4.222373419186790	1.962406681322173
+ % @C	-3.716660893332583	2.294982983320840
+ % @C	-1.104889297157180	-2.536841481696822
+ % @C	-.4987352826173807	-2.936953915854985
+ % @C	1.157288671029150	5.110502879946577
+ % @C	1.710552740827681	4.385172645230767
+ % @C	7.937963238869097	2.324541715235746
+ % @C	7.258814013737603	3.134478419187777
+ % @C	4.560876398640907	5.798906861585470
+ % @C	3.827739192758622	4.909818535130875
+ % @C	1.446658770565298	-7.210647982632208
+ % @C	.5530858732104510	-6.405761269865957
+ % @C	1.449452721900075	3.584581190850595
+ % @C	2.117238670012091	2.957822863484187
+ % @C	-1.543619482493574	-.4131996745510815
+ % @C	-.8575666393217818	-1.298585962263094
+ % @C	-4.068965169186608	-8.461871986699465
+ % @C	-3.319470198594301	-7.925832762601893
+ % @C	3.163023662739679	-2.942706429036133
+ % @C	3.737474556791345	-3.987466740770392
+ % @C	-3.486449033655785	4.173521511809713
+ % @C	-3.779176926161007	4.920700199118112
+ % @C	-4.988380840472063	5.103701717826493
+%%Page: 1 1
+BeginPlot
+	Plot_Terminals
+ % fs3: 54 7 5
+	54 T	-6.485715161514677	1.783763436344760	S
+	-6.485715161514677	1.783763436344760	7 T	S
+	-6.485715161514677	1.783763436344760	5 T	S
+ % fs35: 75 34 31
+	75 T	-.6804404944931978	5.485739011782952	S
+	-.6804404944931978	5.485739011782952	34 T	S
+	-.6804404944931978	5.485739011782952	31 T	S
+ % fs39: 97 36 1
+	97 T	6.119153134021945	-.4447190259073193	S
+	6.119153134021945	-.4447190259073193	36 T	S
+	6.119153134021945	-.4447190259073193	1 T	S
+ % fs42: 58 37 29
+	58 T	.8450682650440835	-5.542007257527299	S
+	.8450682650440835	-5.542007257527299	37 T	S
+	.8450682650440835	-5.542007257527299	29 T	S
+ % fs53: 79 46 38
+	79 T	8.841432004419536	4.289311465920476	S
+	8.841432004419536	4.289311465920476	46 T	S
+	8.841432004419536	4.289311465920476	38 T	S
+ % fs56: 55 30 47
+	55 T	-3.901316553431501	-5.011152993863142	S
+	-3.901316553431501	-5.011152993863142	30 T	S
+	-3.901316553431501	-5.011152993863142	47 T	S
+ % fs58: 99 48 9
+	99 T	1.189235714870117	-8.560023232373977	S
+	1.189235714870117	-8.560023232373977	48 T	S
+	1.189235714870117	-8.560023232373977	9 T	S
+ % fs65: 80 52 22
+	80 T	.9358759430505029	-.9726959816096650	S
+	.9358759430505029	-.9726959816096650	52 T	S
+	.9358759430505029	-.9726959816096650	22 T	S
+ % fs70: 96 55 40
+	96 T	-4.362394740443038	-4.452594978404085	S
+	-4.362394740443038	-4.452594978404085	55 T	S
+	-4.362394740443038	-4.452594978404085	40 T	S
+ % fs72: 76 56 53
+	76 T	5.226652360681727	2.708737898046011	S
+	5.226652360681727	2.708737898046011	56 T	S
+	5.226652360681727	2.708737898046011	53 T	S
+ % fs78: 86 59 51
+	86 T	3.673316999911673	8.527936518072150	S
+	3.673316999911673	8.527936518072150	59 T	S
+	3.673316999911673	8.527936518072150	51 T	S
+ % fs96: 81 73 44
+	81 T	-3.262478143084291	-.7118971211137328	S
+	-3.262478143084291	-.7118971211137328	73 T	S
+	-3.262478143084291	-.7118971211137328	44 T	S
+ % fs102: 96 85 81
+	96 T	-3.985480725370734	-1.882882405365346	S
+	-3.985480725370734	-1.882882405365346	85 T	S
+	-3.985480725370734	-1.882882405365346	81 T	S
+ % fs103: 93 88 18
+	93 T	5.307313287689262	-3.875542140980606	S
+	5.307313287689262	-3.875542140980606	88 T	S
+	5.307313287689262	-3.875542140980606	18 T	S
+ % fs105: 41 17 10 7
+	41 T	-8.214001524900473	3.239078910950904	S
+	-8.214001524900473	3.239078910950904	17 T	S
+	-8.214001524900473	3.239078910950904	-7.154757688031380	2.645934673006643	S
+	-7.154757688031380	2.645934673006643	10 T	S
+	-7.154757688031380	2.645934673006643	7 T	S
+ % fs112: 98 31 28 78
+	98 T	-2.107369201641514	9.377076874785023	S
+	-2.107369201641514	9.377076874785023	-2.188779992055832	7.048177643116820	S
+	-2.188779992055832	7.048177643116820	31 T	S
+	-2.188779992055832	7.048177643116820	28 T	S
+	-2.107369201641514	9.377076874785023	78 T	S
+ % fs113: 45 5 35 32
+	45 T	-4.222373419186790	1.962406681322173	S
+	-4.222373419186790	1.962406681322173	5 T	S
+	-4.222373419186790	1.962406681322173	-3.716660893332583	2.294982983320840	S
+	-3.716660893332583	2.294982983320840	35 T	S
+	-3.716660893332583	2.294982983320840	32 T	S
+ % fs116: 69 63 11 37
+	69 T	-1.104889297157180	-2.536841481696822	S
+	-1.104889297157180	-2.536841481696822	63 T	S
+	-1.104889297157180	-2.536841481696822	-.4987352826173807	-2.936953915854985	S
+	-.4987352826173807	-2.936953915854985	11 T	S
+	-.4987352826173807	-2.936953915854985	37 T	S
+ % fs122: 84 16 49 6
+	84 T	1.157288671029150	5.110502879946577	S
+	1.157288671029150	5.110502879946577	1.710552740827681	4.385172645230767	S
+	1.710552740827681	4.385172645230767	16 T	S
+	1.710552740827681	4.385172645230767	49 T	S
+	1.157288671029150	5.110502879946577	6 T	S
+ % fs127: 77 13 53 38
+	77 T	7.937963238869097	2.324541715235746	S
+	7.937963238869097	2.324541715235746	13 T	S
+	7.937963238869097	2.324541715235746	7.258814013737603	3.134478419187777	S
+	7.258814013737603	3.134478419187777	53 T	S
+	7.258814013737603	3.134478419187777	38 T	S
+ % fs128: 66 56 0 2
+	66 T	4.560876398640907	5.798906861585470	S
+	4.560876398640907	5.798906861585470	3.827739192758622	4.909818535130875	S
+	3.827739192758622	4.909818535130875	56 T	S
+	3.827739192758622	4.909818535130875	0 T	S
+	4.560876398640907	5.798906861585470	2 T	S
+ % fs130: 99 39 58 4
+	99 T	1.446658770565298	-7.210647982632208	S
+	1.446658770565298	-7.210647982632208	.5530858732104510	-6.405761269865957	S
+	.5530858732104510	-6.405761269865957	39 T	S
+	.5530858732104510	-6.405761269865957	58 T	S
+	1.446658770565298	-7.210647982632208	4 T	S
+ % fs132: 62 49 60 20
+	62 T	1.449452721900075	3.584581190850595	S
+	1.449452721900075	3.584581190850595	49 T	S
+	1.449452721900075	3.584581190850595	2.117238670012091	2.957822863484187	S
+	2.117238670012091	2.957822863484187	60 T	S
+	2.117238670012091	2.957822863484187	20 T	S
+ % fs134: 87 42 63 72
+	87 T	-1.543619482493574	-.4131996745510815	S
+	-1.543619482493574	-.4131996745510815	-.8575666393217818	-1.298585962263094	S
+	-.8575666393217818	-1.298585962263094	42 T	S
+	-.8575666393217818	-1.298585962263094	63 T	S
+	-1.543619482493574	-.4131996745510815	72 T	S
+ % fs139: 91 68 83 19
+	91 T	-4.068965169186608	-8.461871986699465	S
+	-4.068965169186608	-8.461871986699465	68 T	S
+	-4.068965169186608	-8.461871986699465	-3.319470198594301	-7.925832762601893	S
+	-3.319470198594301	-7.925832762601893	83 T	S
+	-3.319470198594301	-7.925832762601893	19 T	S
+ % fs140: 94 93 12 3
+	94 T	3.163023662739679	-2.942706429036133	S
+	3.163023662739679	-2.942706429036133	3.737474556791345	-3.987466740770392	S
+	3.737474556791345	-3.987466740770392	93 T	S
+	3.737474556791345	-3.987466740770392	12 T	S
+	3.163023662739679	-2.942706429036133	3 T	S
+ % fs143: 43 35 27 21 15
+	43 T	-3.486449033655785	4.173521511809713	S
+	-3.486449033655785	4.173521511809713	35 T	S
+	-3.486449033655785	4.173521511809713	-3.779176926161007	4.920700199118112	S
+	-3.779176926161007	4.920700199118112	-4.988380840472063	5.103701717826493	S
+	-4.988380840472063	5.103701717826493	27 T	S
+	-4.988380840472063	5.103701717826493	21 T	S
+	-3.779176926161007	4.920700199118112	15 T	S
+ % fs153: 34 8
+	34 T	8 T	S
+ % fs154: 24 76
+	24 T	76 T	S
+ % fs155: 74 16
+	74 T	16 T	S
+ % fs156: 42 71
+	42 T	71 T	S
+ % fs157: 69 65
+	69 T	65 T	S
+ % fs158: 50 41
+	50 T	41 T	S
+ % fs161: 22 71
+	22 T	71 T	S
+ % fs162: 72 44
+	72 T	44 T	S
+ % fs167: 6 75
+	6 T	75 T	S
+ % fs178: 30 57
+	30 T	57 T	S
+ % fs179: 23 85
+	23 T	85 T	S
+ % fs180: 68 64
+	68 T	64 T	S
+ % fs181: 97 88
+	97 T	88 T	S
+ % fs186: 74 0
+	74 T	0 T	S
+ % fs187: 61 70
+	61 T	70 T	S
+ % fs192: 95 19
+	95 T	19 T	S
+ % fs195: 67 14
+	67 T	14 T	S
+ % fs197: 94 33
+	94 T	33 T	S
+ % fs198: 45 73
+	45 T	73 T	S
+ % fs206: 25 61
+	25 T	61 T	S
+ % fs209: 8 43
+	8 T	43 T	S
+ % fs216: 67 40
+	67 T	40 T	S
+ % fs218: 3 52
+	3 T	52 T	S
+ % fs224: 4 70
+	4 T	70 T	S
+ % fs227: 2 59
+	2 T	59 T	S
+ % fs232: 79 89
+	79 T	89 T	S
+ % fs239: 82 25
+	82 T	25 T	S
+ % fs245: 47 83
+	47 T	83 T	S
+ % fs246: 26 1
+	26 T	1 T	S
+ % fs248: 17 92
+	17 T	92 T	S
+ % fs250: 64 90
+	64 T	90 T	S
+  (Euclidean SMT:  100 points,  length = 130.03420728039916,  0.40 seconds)
+EndPlot
+
+% @0 Euclidean SMT
+% N M Nodes LPs P1CPU P2CPU TotCPU
+% @1 100 252 1 9 0.39 0.01 0.40
+% Z RootZ %Gap RootLPs RootCPU RedMST
+% @2 130.03420728039916 13003420728039916.000000 0.00000 9 0.01 3.2258
+% InitPRows InitPNZ InitLPRows InitLPNZ
+% @3 285 1654 101 1224
+% RootPRows RootPNZ RootLPRows RootLPNZ
+% @4 402 4263 179 2308
+% FinalPRows FinalPNZ FinalLPRows FinalLPNZ
+% @5 402 4263 179 2308
+% SMTFSTs SMTAvgFSTSz SMTMaxFSTSz #2FSTs #3FSTs ... #10FSTS #>10FSTs
+% @6 58 2.706897 5 31 14 12 1 0 0 0 0 0 0
