@@ -12,7 +12,7 @@ import os
 import sys
 import code
 import subprocess
-
+import re
 
 
 if len(sys.argv) < 2:
@@ -55,10 +55,10 @@ for ii, each in enumerate(listOfDists):
 		lines = r.readlines()
 	for line in lines:
 		if '(Euclidean SMT:' in line:
-			equal = line.index('=', beg=0)
-			comma = line.index(',', beg=35)
-			length = line[equal + 2 : comma]
-			totalDists.write(length)
+			regexFind = re.findall('length = (\d+\.\d+)', line)
+			#code.interact(local=locals())
+
+			totalDists.write(regexFind[0] + '\n')
 
 totalDists.close()
 
