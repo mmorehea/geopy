@@ -55,7 +55,10 @@ for ii, each in enumerate(listOfDists):
 		lines = r.readlines()
 	for line in lines:
 		if '(Euclidean SMT:' in line:
-			totalDists.write(line)
+			equal = line.index('=', beg=0)
+			comma = line.index(',', beg=35)
+			length = line[equal + 2 : comma]
+			totalDists.write(length)
 
 totalDists.close()
 
