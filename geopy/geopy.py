@@ -46,6 +46,7 @@ listOfDists.append(dists)
 totalDists = open('totalDists_' + folderName + '.txt', 'w')
 
 for ii, each in enumerate(listOfDists):
+	print ii
 	with open('temp.txt', 'w') as w:
 		for line in each:
 			w.write(line)
