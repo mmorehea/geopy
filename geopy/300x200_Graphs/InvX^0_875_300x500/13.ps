@@ -1,0 +1,4098 @@
+%!PS-Adobe-3.0
+%%Creator: Steiner Tree Version 4.0
+%%Copyright: Copyright (c) 1998, 2016 by David M. Warme. This work is licensed under a Creative Commons Attribution 4.0 International License.
+%%LanguageLevel: 1
+%%DocumentNeededResources: font Times-Roman
+%%DocumentSuppliedResources: procset SteinerTreeProcs 2.0 0
+%%EndComments
+%%BeginProlog
+%%BeginProcSet: SteinerTreeProcs 2.0 0
+/LabelTerminals	0		def	% set non-zero to label terminals
+/inch { 72 mul } def
+/PaperWidth	8.5 inch	def
+/PaperHeight	11 inch		def
+/BigBoxSize	7 inch		def
+/SmallBoxSize	2 inch		def
+/SmallBoxHeight	SmallBoxSize	def
+/SmallBoxWidth	SmallBoxSize	def
+/BoxHeight	BigBoxSize	def
+/BoxWidth	BigBoxSize	def
+/MinX		0		def
+/MaxX		1		def
+/MinY		0		def
+/MaxY		1		def
+/BoxMode	0		def	% (0 ==> big plot, 1 ==> small plots)
+/SmallBoxCount	0		def
+/TermRadius	1 32 div inch	def
+/LineWidth	currentlinewidth	def
+
+% Define the clipping region to be the inside edge of the box.
+
+/ClipHeight	BigBoxSize LineWidth sub def
+/ClipWidth	ClipHeight def
+
+% Define the plotting region so that points plotted at the extremes will
+% exactly meet the edge of the clipping region.  (Reduce by the terminal
+% radius on each side.)
+
+/PlotHeight	ClipHeight TermRadius 2 mul sub def
+/PlotWidth	ClipWidth  TermRadius 2 mul sub	def
+/XlateX { MinX sub MaxX MinX sub div PlotWidth mul } def
+/XlateY { MinY sub MaxY MinY sub div PlotHeight mul } def
+/XlateXY { exch XlateX exch XlateY } def
+/Dup2 { dup 3 -1 roll dup 4 1 roll exch } def
+/Swap2 { 4 2 roll } def
+% define the two fonts we will use:
+%	- one for numbering the terminals
+%	- one for printing the plot's title
+/TermNumPointsize	8	def
+/TitlePointsize		15	def
+/TermNumFont
+	/Times-Roman findfont TermNumPointsize scalefont
+def
+/UseTermNumFont { TermNumFont setfont } def
+/TitleFont
+	/Times-Roman findfont TitlePointsize scalefont
+def
+/UseTitleFont { TitleFont setfont } def
+/DefineTerminals {
+	/NumTerms exch def
+	/TermX NumTerms array def
+	/TermY NumTerms array def
+	/TermIndex 0 def
+} def
+/DT {
+	TermY TermIndex 3 -1 roll put
+	TermX TermIndex 3 -1 roll put
+	/TermIndex TermIndex 1 add def
+} def
+/SetAxes {	% minx maxx miny maxy
+	/MaxY exch def
+	/MinY exch def
+	/MaxX exch def
+	/MinX exch def
+} def
+/PTString	12 string	def
+/Plot_Terminals {
+	LabelTerminals 0 eq {
+		% Display terminals, no labels
+		0 1 NumTerms 1 sub {			% i
+			dup				% i i
+			TermX exch get exch		% x i
+			TermY exch get
+			newpath
+			XlateXY
+			TermRadius 0 360 arc fill
+		} for
+	}
+	{	% Display terminals, with labels
+		0 1 NumTerms 1 sub {			% i
+			dup				% i i
+			PTString cvs exch dup		% str i i
+			TermX exch get exch		% str x i
+			TermY exch get			% str x y
+			newpath
+			XlateXY
+			Dup2
+			TermRadius 0 360 arc fill
+			moveto TermRadius 3 mul dup neg rmoveto
+			UseTermNumFont
+			show
+		} for
+	} ifelse
+} def
+% n T ==> Xn Yn, get coordinates of terminal n.
+/T {
+	dup
+	TermX exch get exch
+	TermY exch get
+} def
+% Draw a line segment.
+/S {
+	newpath
+	XlateXY
+	moveto
+	XlateXY
+	lineto
+	stroke
+} def
+% Draw a corner.  First point is incident to vertical segment.
+% Second point is incident to horizontal segment.
+/C {	% x1 y1 x2 y2
+	newpath
+	% x1 y1 x2 y2 -> x1 y1 x1 y2 x2 y2
+	4 -1 roll dup 5 1 roll exch dup 4 -1 roll exch
+	XlateXY
+	moveto
+	XlateXY
+	lineto
+	XlateXY
+	lineto
+	stroke
+} def
+/BeginPlot {
+	FlushSmallPlot
+	gsave
+	PaperWidth BoxWidth sub 2 div
+	 PaperHeight BoxHeight sub 2 div
+	  translate
+	newpath
+	0 0 moveto
+	BoxWidth 0 lineto
+	BoxWidth BoxHeight lineto
+	0 BoxHeight lineto
+	closepath
+	stroke
+	gsave
+	% establish a clipping region at the inside edge of the box
+	LineWidth 2 div dup moveto
+	ClipWidth 0 rlineto
+	0 ClipHeight rlineto
+	ClipWidth neg 0 rlineto
+	closepath
+	clip
+	% establish the origin for the plotting region
+	LineWidth 2 div TermRadius add
+	 dup
+	  translate
+} def
+/EndPlot {
+	grestore
+	newpath
+	UseTitleFont
+	0 0 moveto
+		dup stringwidth pop BigBoxSize exch sub 2 div
+		TitlePointsize -2 mul
+	rmoveto
+	show
+	grestore
+	showpage
+} def
+/BeginSmallPlot {
+	gsave
+	.75 inch SmallBoxCount 3 mod SmallBoxWidth .5 inch add mul add
+	  .75 inch 3 SmallBoxCount 3 idiv sub SmallBoxHeight .5 inch add mul add
+	    translate
+	SmallBoxWidth BoxWidth div
+	 SmallBoxHeight BoxHeight div
+	  scale
+	newpath
+	0 0 moveto
+	BoxWidth 0 lineto
+	BoxWidth BoxHeight lineto
+	0 BoxHeight lineto
+	closepath
+	stroke
+	gsave
+	% establish a clipping region at the inside edge of the box
+	LineWidth 2 div dup moveto
+	ClipWidth 0 rlineto
+	0 ClipHeight rlineto
+	ClipWidth neg 0 rlineto
+	closepath
+	clip
+	% establish the origin for the plotting region
+	LineWidth 2 div TermRadius add
+	 dup
+	  translate
+} def
+/EndSmallPlot2 {
+	grestore
+	newpath
+	UseTitleFont
+	0 0 moveto
+		dup stringwidth pop BigBoxSize exch sub 2 div
+		TitlePointsize -2 mul
+	rmoveto
+	show
+	grestore
+	/SmallBoxCount SmallBoxCount 1 add def
+	SmallBoxCount 12 ge {
+		FlushSmallPlot
+	} if
+} def
+/FlushSmallPlot {
+	SmallBoxCount 0 gt {
+		showpage
+		/SmallBoxCount	0 def
+	} if
+} def
+/PT {
+	dup				% i i
+	TermX exch get exch		% x i
+	TermY exch get
+	newpath
+	XlateXY
+	TermRadius 0 360 arc fill
+} def
+%%EndProcSet
+%%EndProlog
+
+ % ../bb
+ % Args:
+ % Phase 1: 2.12 seconds
+
+%%BeginSetup
+
+-1000 1000 -1000 1000 SetAxes
+
+300 DefineTerminals
+	-297.5611237285651	.4833324400310629	DT
+	-29.54948320486573	2.843004579012472	DT
+	.3892801431794624	-1.784817976829799	DT
+	-190.0533289108261	.0033592065482252	DT
+	-965.3429851737660	-1.641125439548318	DT
+	.0130878758067183	-.2592377557825785	DT
+	413.5396465438170	.3571181223173879	DT
+	641.1556817902319	.1196480289227110	DT
+	.0003517739681910	607.2460115086708	DT
+	-44.57867884379277	2.143503420835486	DT
+	-170.9756955696997	.2144076991675092	DT
+	-627.0025796962368	.0020301855729485	DT
+	.0620954154167066	-2.231630472458732	DT
+	96.25927986064152	-97.17499291569755	DT
+	.0106238042503719	8.875356831108434	DT
+	-48.25624328441938	131.6339746962573	DT
+	.0052350421284472	641.2629750103654	DT
+	1.901305877881896	-.1605965466284260	DT
+	11.43972507018270	-43.05703189361770	DT
+	2.019106606162722	10.38858389312213	DT
+	-832.6632939258727	-274.9141571041169	DT
+	-.3678172189163432	57.55499951252660	DT
+	292.8810107720587	-2.928158011800746	DT
+	.4948570687379288	-.0014491630679458	DT
+	41.13685816141650	-35.42634405362935	DT
+	.0730006725233352	.0199880348694704	DT
+	.0018224002579926	-.0068375543247611	DT
+	-365.2802238750099	.0036868877953111	DT
+	167.0396526043648	-67.94761915281947	DT
+	-.0056376252161954	.0525535124816087	DT
+	2.646005602847253	-.0134417334021464	DT
+	-2.310284927381076	-3.337174369263834	DT
+	-508.7019741027674	325.7560409602824	DT
+	-.0006568108427699	6.775688386037928	DT
+	-.2051426788248135	228.7271921022634	DT
+	966.0808165686860	-554.1666825648153	DT
+	.0007910729202649	-.0075571878514893	DT
+	228.4049206529152	-21.97267968906578	DT
+	-.0188513335135666	656.0978162510660	DT
+	.0014847821281591	-91.77258221100452	DT
+	-5.141762626656828	9.121862874234239	DT
+	-192.3468550533431	-120.0351523090071	DT
+	-.0006200096984229	34.95299620079095	DT
+	-61.59677174504690	-.0013210524318764	DT
+	3.252125205457105	-.0991463337525146	DT
+	21.68380377911023	.1579021341158294	DT
+	-115.9092437948965	.0248316867159701	DT
+	-9.815731254534398	-765.2531903439308	DT
+	-.5485487772288025	-66.30951312865795	DT
+	.0975622861203646	-49.69590201429890	DT
+	-14.36936397483327	-1.630470086627156	DT
+	-84.99800081058776	-100.5628353871870	DT
+	-.0028519523449403	6.644264423770323	DT
+	-33.36891405837878	152.8896440932662	DT
+	-54.27888366211481	215.5302989673769	DT
+	6.661004144077764	286.4477984547923	DT
+	-211.6233341705002	1.759215841429863	DT
+	-204.6173487224985	699.5597865519846	DT
+	-5.824025229096832	387.7000592759672	DT
+	-.6821594340356114	-35.47385219076909	DT
+	.1443582445665469	-770.6302306020231	DT
+	122.2582145921712	2.041948790350261	DT
+	-326.4322811763320	-746.3333943914556	DT
+	-465.0358585691803	1.682493626545124	DT
+	623.4610544116422	209.5859162849422	DT
+	-5.531700152696657	-4.009291706900967	DT
+	9.439705602260801	1.932549589075619	DT
+	-.1705610856982958	450.1418411365541	DT
+	-126.2016576731802	255.4281587077880	DT
+	-829.9636637558384	853.0707622340194	DT
+	-157.2551684731830	106.1947456944080	DT
+	96.21097141360315	-336.2063328867886	DT
+	-301.4564528214230	-119.9772700842317	DT
+	-343.2784091794148	.0377300423066344	DT
+	.0079455928663492	-4.992942402975586	DT
+	890.8837041005934	69.22607859124286	DT
+	.0691489540287192	21.77383600810571	DT
+	-355.3950614336890	-93.44124950371690	DT
+	-12.48507602040956	-.0087054695434289	DT
+	-1.592113779725195	-2.667861426563831	DT
+	-637.2888489059135	-875.0474733878089	DT
+	24.91532872256243	12.99119237892546	DT
+	-80.06618014837601	-917.7882514835020	DT
+	.6009497372938313	111.2741739777097	DT
+	-196.7153584702381	-.0047596790037686	DT
+	44.73125043623281	183.8936515980513	DT
+	160.1308326943804	.0205303194138651	DT
+	.1349379251678328	145.8770743645795	DT
+	-.0123751233485335	-.1860991325097530	DT
+	-131.6613524342107	.0028820085691450	DT
+	-447.5657729047235	159.9360389376929	DT
+	-5.554494978305684	-2.067191650616109	DT
+	710.7733388613023	.0008252247030213	DT
+	-.0722507396977790	-64.39622682344372	DT
+	.0389363186627633	-10.32003404727106	DT
+	-360.8284725936688	2.385683632983841	DT
+	-.0700121058370087	41.93478210555371	DT
+	339.6106302428154	-180.2588790457047	DT
+	-7.105552956360156	111.2667258262347	DT
+	820.3271394147803	1.204963873937572	DT
+	.0006876482730149	.1975261077200229	DT
+	.1443771989486322	.0029624646937236	DT
+	229.2528170530540	.3108221658984576	DT
+	.0018287465067033	-1.916914266852245	DT
+	-45.33787420158421	-881.4638051057659	DT
+	-119.3618587410643	-148.1617594894828	DT
+	59.54994520013428	985.1787558055634	DT
+	-2.038788641875839	511.9946126938351	DT
+	-.2046896842473416	220.2130627609722	DT
+	14.93037709921111	.0067593596488678	DT
+	-.2023579788948382	28.19661501748760	DT
+	1.057426331712917	12.86078565732043	DT
+	.0150233659177274	784.8414086962523	DT
+	427.0878017508533	.0012483853010962	DT
+	55.43679326998426	1.425499493206757	DT
+	3.234292632582082	-.0224974113305052	DT
+	-.4229881724986625	276.1127556217072	DT
+	.0012627946337034	-.0100822747727988	DT
+	182.9611223098450	13.05843895010957	DT
+	-154.2461702817193	-969.2491424562396	DT
+	2.730620003819126	42.00774879207051	DT
+	-638.8966388191848	-69.28142007414670	DT
+	.0052206282541647	-.1574930087879238	DT
+	-46.19451469258126	-6.951478995791149	DT
+	324.0126559582274	-.7798516420421037	DT
+	.0942979594959752	-293.2832705748367	DT
+	8.980950013442565	-.7883817121507945	DT
+	-.3388224299316106	-.0073602082892421	DT
+	-6.078893392722989	5.127814726788528	DT
+	-4.160573333223282	129.8574739464181	DT
+	172.7262716449659	-.0007773872829375	DT
+	.9176478038419873	110.4940964173918	DT
+	-71.77079156481090	-808.4344724291270	DT
+	24.67749638582290	-3.216232062862559	DT
+	27.67520275372203	-.0038498792642940	DT
+	18.51149675944884	-.0003630518574481	DT
+	.0017463772896916	-.0058693504906842	DT
+	.0421263337046867	-399.1833971151990	DT
+	-22.53269585144494	27.69016407809317	DT
+	-2.736867225894684	-6.353434067666511	DT
+	398.6745890355710	.0810230729154000	DT
+	519.5916554107644	-223.3254189367750	DT
+	.0004442856483137	-1.199900090512073	DT
+	.0008460343210571	.0004502180279359	DT
+	-9.598103935013454	56.80372570502367	DT
+	-.0003382676660521	36.79590679384568	DT
+	3.451323533918867	33.29505554020351	DT
+	-78.14914658612395	-28.29789408161525	DT
+	-.0012050012708187	16.02197104028732	DT
+	-18.53433036669957	1.458555314857221	DT
+	-.8009907035873312	-154.0349999493751	DT
+	-111.1608899365414	-37.88779646057730	DT
+	.0003882603311921	-1.283487816627257	DT
+	144.0129683587993	253.8822834881855	DT
+	785.0285817087098	.0336603092354153	DT
+	5.587152361887546	-.1134900599699903	DT
+	-5.304625190921000	413.7481403356910	DT
+	409.6794913078675	28.96581279331690	DT
+	-4.519352055448735	-9.738378306775757	DT
+	.0190033578295470	12.18775706388442	DT
+	.1996042931440343	-.0105795366179109	DT
+	-4.087317445599296	80.53266978395322	DT
+	.5176243230813498	-181.1324328184464	DT
+	.1418497095341990	-99.50736133979501	DT
+	-.0049685552135087	.7748060542515987	DT
+	-.0308022813691196	-3.375212830761825	DT
+	-.0376866547821919	7.546222539841323	DT
+	-89.39924738053980	-5.821200863206627	DT
+	-.0146289976257776	-952.6727024963552	DT
+	-119.9401178421945	.0339422499024521	DT
+	.0040032178363845	50.83747994858299	DT
+	.5158124336048786	-.5026645865475529	DT
+	.0727029388963274	877.0064652041544	DT
+	17.25913327498824	89.67316929793673	DT
+	2.668477268888523	372.3907144513985	DT
+	29.99433880194078	3.203812684172930	DT
+	-133.7573105066010	3.078640441833272	DT
+	.0145500992765619	.0333361169520002	DT
+	3.347884021974550	-.2155514180261662	DT
+	-29.79964541208232	.0520058564710552	DT
+	-3.045020330417514	1.648553731495667	DT
+	-48.04236065710677	-351.7836231258977	DT
+	.0096403957392113	.0402125478638027	DT
+	.0007095922723010	-106.9016338084753	DT
+	-.0019140109435511	-.4829936603332499	DT
+	38.09775345417438	180.5811855750628	DT
+	907.1892034912728	61.44396455607988	DT
+	-786.3764502358802	308.0517638926490	DT
+	-10.52362348968949	-507.9362775346860	DT
+	.3779170761497425	.0002463087608929	DT
+	-716.9597907694073	.0012457825289402	DT
+	-2.047858639900255	-75.07233169432698	DT
+	-.0055131187026517	198.7901755886380	DT
+	-277.3757938853340	7.730268084524368	DT
+	11.71059873209628	-3.698722357160704	DT
+	-261.7526748304682	-14.00275483137409	DT
+	38.21561684861513	.0417775428651338	DT
+	.0299191830408744	-732.8411419888780	DT
+	74.89160250058443	-27.08016152146069	DT
+	-875.1787184568572	.0156876728563019	DT
+	-88.24466395014177	105.8173397060768	DT
+	-635.3712883205455	.2122638948877692	DT
+	-3.598222415757845	357.8347067757281	DT
+	-2.564188254954728	46.75730311527286	DT
+	-.4964624025290049	593.4311957111420	DT
+	.8169872419088051	-.0064796347378432	DT
+	-4.843218720596724	-.0868573896113958	DT
+	.0677850682204734	-398.1532742175750	DT
+	49.29005416163522	-42.16205023641350	DT
+	-116.8310810192840	78.81370369305477	DT
+	4.461957692590203	-83.07606902278098	DT
+	-.1464716407797367	-80.85903615431687	DT
+	233.1613010680626	.0841527259623262	DT
+	-928.1355543177666	-5.721196374725196	DT
+	-51.20851798855971	-2.349363652332385	DT
+	-.4222693509956342	25.51689848796945	DT
+	384.0108382758165	-1.658683780286082	DT
+	454.3144358570810	489.9732070998912	DT
+	-3.735046021457378	.0001152228892351	DT
+	.1860576250953727	-.0005237752917536	DT
+	-.2569546021425139	-.2922224280088129	DT
+	-.4989603030282978	7.978398290250651	DT
+	-2.109172808134189	.3730212499053778	DT
+	-.0894600982257997	207.8561434407484	DT
+	-53.90714356774720	-.0239393102730218	DT
+	586.0044175600221	-.5375687962691700	DT
+	-11.26971217380207	8.867635989917403	DT
+	-881.0339094998403	-3.692148966361060	DT
+	-3.439175214795114	-.0005953778523916	DT
+	558.3170580994652	10.99748321800621	DT
+	-.2664026274254637	-.0006302576633743	DT
+	-.0000571738656845	50.26287474127684	DT
+	2.173179495436442	-.0696135880864403	DT
+	-55.28496793779868	-175.8767435642694	DT
+	965.3952665995812	43.45099853384067	DT
+	-600.7151327589941	-686.8081259278235	DT
+	-65.98943965780688	2.503765888108660	DT
+	984.3679613695598	-240.6097787127574	DT
+	-19.73262132723459	-7.704912646472053	DT
+	-48.83643964034956	-.0121579001286136	DT
+	71.02240603684755	465.3978108237470	DT
+	798.9184633503162	786.7548707561173	DT
+	11.27493121123586	652.0146836792730	DT
+	.6639134562258278	159.7928226793378	DT
+	868.1629893921673	9.044289613202976	DT
+	-2.159199772126157	782.3068904102355	DT
+	.0179357789369304	47.06574993153481	DT
+	14.07850230798874	-.0240336769605846	DT
+	69.83847967999577	4.967861538406282	DT
+	55.44529949304956	.0114482297979065	DT
+	-.0007458232373664	6.138768583730211	DT
+	-849.8148008820873	-.0163934106041096	DT
+	2.125908145117250	120.8426385356201	DT
+	9.182709677722868	-211.5045724677420	DT
+	2.999547365972262	-149.6413661829929	DT
+	.0162078877492604	877.4512644847900	DT
+	8.559810039052309	-12.66640175480574	DT
+	-76.00456444267105	.1471107872810080	DT
+	-119.1976272881154	-.1844449931273856	DT
+	.9722443382553365	-42.95030854107494	DT
+	-.1221650999460734	-.3373138976925247	DT
+	-999.9001230423254	.0398505678125502	DT
+	-.0003273246289836	-8.917785280174940	DT
+	-.0010132710960988	-195.3468597992042	DT
+	181.1538700059557	-16.97730631385581	DT
+	92.86299949296267	-387.8184186798186	DT
+	.6780836904864599	402.5303254586220	DT
+	-631.1540392594754	-905.3288203806810	DT
+	177.4513862996495	.0034300989073016	DT
+	-760.0985934521483	147.2238514914017	DT
+	-19.42950768523371	-73.91474370807406	DT
+	.9744988854416761	.6300087282853610	DT
+	8.824314591114215	-.1375413692009032	DT
+	-.3536153339370002	-16.90315254809422	DT
+	57.64508084067735	205.5081595473809	DT
+	-2.470865625074225	-614.2081689521377	DT
+	-585.3216911144334	530.6867784142976	DT
+	.0029415773916526	-.1167238505889826	DT
+	3.747773127191521	.0438007079641237	DT
+	-5.053479068328328	.8918249139455837	DT
+	212.7751762279815	-2.518816032057543	DT
+	-755.5696263840338	-156.8689607161659	DT
+	.1796091229184639	-.0667595902315270	DT
+	-74.82361853791098	7.746408555421567	DT
+	-120.2964811448221	-3.753483635237785	DT
+	-.0262889794990996	-.4326039770323860	DT
+	381.9247322875469	14.69093448786850	DT
+	-.3393509139452817	3.679429280905082	DT
+	-.0005290609811937	-.0002423952154230	DT
+	.2676004008719701	6.156210398007260	DT
+	-.1758651265502066	-149.3062768718391	DT
+	245.7297724703760	33.66933611835611	DT
+	50.64624401411720	-6.136967502247557	DT
+	-2.256634822080968	.0008975353127879	DT
+	8.552021734448317	-13.56542823131826	DT
+	149.6834085836158	.2002137511145746	DT
+	432.0829469540226	1.997974877167053	DT
+	2.002964679574460	-2.248948421520253	DT
+	-173.3590099904643	1.305499801863561	DT
+	-251.1363087209239	-2.821673636189189	DT
+
+%%EndSetup
+
+ % _gst_initialize_constraint_pool: 0.00 seconds.
+ % Constraint pool initialized with:
+ % 	1	Total degree rows	574	coeffs.
+ % 	300	Cutset rows		1509	coeffs.
+ % 	0	Incompatibility rows	0	coeffs.
+ % 	363	2-terminal SEC rows	1157	coeffs.
+ % 	654	Total rows in pool	301	in LP
+ % @PMEM 654 rows, 1 blocks, 9091 nzfree, 0 nzwasted, 12960 nztotal
+ % _gst_build_initial_formulation: 0.00 seconds.
+% Resuming node 0
+ % @PAP adding 301 rows, 2083 nz to LP
+  % @PL 301 rows, 574 cols, 2657 nonzeros, 92 slack, 209 tight.
+  % @PAP adding 67 rows, 193 nz to LP
+  % @PL 368 rows, 574 cols, 2850 nonzeros, 129 slack, 239 tight.
+  % @PAP adding 43 rows, 135 nz to LP
+  % @PL 411 rows, 574 cols, 2985 nonzeros, 149 slack, 262 tight.
+  % @PAP adding 34 rows, 95 nz to LP
+  % @PL 445 rows, 574 cols, 3080 nonzeros, 173 slack, 272 tight.
+  % @PAP adding 21 rows, 74 nz to LP
+  % @PL 466 rows, 574 cols, 3154 nonzeros, 176 slack, 290 tight.
+  % @PAP adding 14 rows, 61 nz to LP
+  % @PL 480 rows, 574 cols, 3215 nonzeros, 183 slack, 297 tight.
+  % @PAP adding 10 rows, 37 nz to LP
+  % @PL 490 rows, 574 cols, 3252 nonzeros, 182 slack, 308 tight.
+  % @PAP adding 9 rows, 52 nz to LP
+  % @PL 499 rows, 574 cols, 3304 nonzeros, 189 slack, 310 tight.
+  % @PAP adding 5 rows, 21 nz to LP
+  % @PL 504 rows, 574 cols, 3325 nonzeros, 185 slack, 319 tight.
+  % @PAP adding 3 rows, 8 nz to LP
+  % @PL 507 rows, 574 cols, 3333 nonzeros, 189 slack, 318 tight.
+  % @PAP adding 2 rows, 11 nz to LP
+  % @PL 509 rows, 574 cols, 3344 nonzeros, 189 slack, 320 tight.
+  % Node 0 LP 1 Solution, length = 66312157712638880.000000, 0.01 0
+ % 0 fractional variables
+ % @LO 0.01 6631.21577126388820033753 99.9000000000
+ % @LN 0.01 6631.21577126388820033753 99.9000000000
+ % @UO 0.02 10463.49246442700859915931 36.6252157795
+ % @UN 0.02 10463.49246442700859915931 36.6252157795
+ % @cutset: 43 connected components.
+ % initially 138 congested vertices:
+ % _gst_find_congested_components found 7 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	5 verts,	5 edges
+ % 	component 2:	91 verts,	84 edges
+ % 	component 3:	3 verts,	3 edges
+ % 	component 4:	3 verts,	3 edges
+ % 	component 5:	3 verts,	3 edges
+ % 	component 6:	7 verts,	7 edges
+ % Enumerating 91 congested vertices.
+ % @D deleting 189 slack rows
+ % Entering garbage_collect_pool
+ % @PMEM 654 rows, 1 blocks, 9091 nzfree, 0 nzwasted, 12960 nztotal
+ % @PAP adding 246 rows, 10378 nz to LP
+ % @PMEM 900 rows, 2 blocks, 11363 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 566 rows, 574 cols, 12715 nonzeros, 273 slack, 293 tight.
+  % @PAP adding 26 rows, 147 nz to LP
+  % @PL 592 rows, 574 cols, 12862 nonzeros, 283 slack, 309 tight.
+  % @PAP adding 12 rows, 40 nz to LP
+  % @PL 604 rows, 574 cols, 12902 nonzeros, 273 slack, 331 tight.
+  % @PAP adding 7 rows, 23 nz to LP
+  % @PL 611 rows, 574 cols, 12925 nonzeros, 281 slack, 330 tight.
+  % @PAP adding 4 rows, 16 nz to LP
+  % @PL 615 rows, 574 cols, 12941 nonzeros, 278 slack, 337 tight.
+  % @PAP adding 3 rows, 11 nz to LP
+  % @PL 618 rows, 574 cols, 12952 nonzeros, 283 slack, 335 tight.
+  % @PAP adding 1 rows, 4 nz to LP
+  % @PL 619 rows, 574 cols, 12956 nonzeros, 286 slack, 333 tight.
+  % @PAP adding 3 rows, 11 nz to LP
+  % @PL 622 rows, 574 cols, 12967 nonzeros, 284 slack, 338 tight.
+  % @PAP adding 2 rows, 7 nz to LP
+  % @PL 624 rows, 574 cols, 12974 nonzeros, 285 slack, 339 tight.
+  % Node 0 LP 2 Solution, length = 93114450694717968.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.02 246
+ % 8 fractional variables
+ % @LO 0.04 6631.21577126388820033753 36.6252157795
+ % @LN 0.04 9311.44506947179615963250 11.0101612714
+ % @cutset: 18 connected components.
+ % initially 89 congested vertices:
+ % _gst_find_congested_components found 10 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	3 verts,	3 edges
+ % 	component 2:	5 verts,	5 edges
+ % 	component 3:	3 verts,	3 edges
+ % 	component 4:	3 verts,	3 edges
+ % 	component 5:	3 verts,	3 edges
+ % 	component 6:	31 verts,	30 edges
+ % 	component 7:	5 verts,	5 edges
+ % 	component 8:	3 verts,	3 edges
+ % 	component 9:	3 verts,	3 edges
+ % Enumerating 31 congested vertices.
+ % @D deleting 285 slack rows
+ % @PAP adding 52 rows, 1090 nz to LP
+ % @PMEM 952 rows, 2 blocks, 10221 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 391 rows, 574 cols, 4379 nonzeros, 53 slack, 338 tight.
+  % @PAP adding 10 rows, 35 nz to LP
+  % @PL 401 rows, 574 cols, 4414 nonzeros, 57 slack, 344 tight.
+  % @PAP adding 6 rows, 47 nz to LP
+  % @PL 407 rows, 574 cols, 4461 nonzeros, 56 slack, 351 tight.
+  % Node 0 LP 3 Solution, length = 97710574414695280.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 52
+ % 1 fractional variables
+ % @LO 0.05 9311.44506947179615963250 11.0101612714
+ % @LN 0.05 9771.05744146952747541945 6.6176281515
+ % @UO 0.05 10463.49246442700859915931 6.6176281515
+ % @UN 0.05 10397.80459902872644306626 6.0276873987
+ % @cutset: 10 connected components.
+ % initially 61 congested vertices:
+ % _gst_find_congested_components found 5 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	3 verts,	3 edges
+ % 	component 2:	21 verts,	20 edges
+ % 	component 3:	3 verts,	3 edges
+ % 	component 4:	3 verts,	3 edges
+ % Enumerating 21 congested vertices.
+ % @D deleting 56 slack rows
+ % @PAP adding 34 rows, 1141 nz to LP
+ % @PMEM 986 rows, 2 blocks, 9046 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 385 rows, 574 cols, 5136 nonzeros, 64 slack, 321 tight.
+  % @PAP adding 24 rows, 578 nz to LP
+  % @PL 409 rows, 574 cols, 5714 nonzeros, 62 slack, 347 tight.
+  % @PAP adding 2 rows, 6 nz to LP
+  % @PL 411 rows, 574 cols, 5720 nonzeros, 60 slack, 351 tight.
+  % @PAP adding 9 rows, 129 nz to LP
+  % @PL 420 rows, 574 cols, 5849 nonzeros, 60 slack, 360 tight.
+  % Node 0 LP 4 Solution, length = 100836564555216912.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 34
+ % 10 fractional variables
+ % @LO 0.06 9771.05744146952747541945 6.0276873987
+ % @LN 0.06 10083.65645552169189613778 3.0212930096
+ % @cutset: 7 connected components.
+ % initially 62 congested vertices:
+ % _gst_find_congested_components found 4 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	32 verts,	32 edges
+ % 	component 2:	3 verts,	3 edges
+ % 	component 3:	3 verts,	3 edges
+ % Enumerating 32 congested vertices.
+ % @D deleting 60 slack rows
+ % @PAP adding 17 rows, 491 nz to LP
+ % @PMEM 1003 rows, 2 blocks, 8538 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 377 rows, 574 cols, 5078 nonzeros, 28 slack, 349 tight.
+  % @PAP adding 28 rows, 534 nz to LP
+  % @PL 405 rows, 574 cols, 5612 nonzeros, 40 slack, 365 tight.
+  % @PAP adding 4 rows, 228 nz to LP
+  % @PL 409 rows, 574 cols, 5840 nonzeros, 41 slack, 368 tight.
+  % @PAP adding 11 rows, 192 nz to LP
+  % @PL 420 rows, 574 cols, 6032 nonzeros, 43 slack, 377 tight.
+  % @PAP adding 1 rows, 6 nz to LP
+  % @PL 421 rows, 574 cols, 6038 nonzeros, 43 slack, 378 tight.
+  % Node 0 LP 5 Solution, length = 101767182610758928.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 17
+ % 18 fractional variables
+ % @LO 0.06 10083.65645552169189613778 3.0212930096
+ % @LN 0.06 10176.71826107589367893524 2.1262790221
+ % @UO 0.07 10397.80459902872644306626 2.1262790221
+ % @UN 0.07 10370.85490407946235791314 1.8719444520
+ % Fixed 0 vars to 0 and 1 vars to 1.
+ % @cutset: 6 connected components.
+ % initially 66 congested vertices:
+ % _gst_find_congested_components found 4 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	23 verts,	27 edges
+ % 	component 2:	3 verts,	3 edges
+ % 	component 3:	3 verts,	4 edges
+ % Enumerating 23 congested vertices.
+ % @D deleting 43 slack rows
+ % @PAP adding 21 rows, 856 nz to LP
+ % @PMEM 1024 rows, 2 blocks, 7661 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 399 rows, 574 cols, 5716 nonzeros, 32 slack, 367 tight.
+  % @PAP adding 23 rows, 748 nz to LP
+  % @PL 422 rows, 574 cols, 6464 nonzeros, 42 slack, 380 tight.
+  % @PAP adding 2 rows, 21 nz to LP
+  % @PL 424 rows, 574 cols, 6485 nonzeros, 42 slack, 382 tight.
+  % @PAP adding 3 rows, 34 nz to LP
+  % @PL 427 rows, 574 cols, 6519 nonzeros, 42 slack, 385 tight.
+  % Node 0 LP 6 Solution, length = 102274692761789648.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.01 21
+ % 53 fractional variables
+ % @LO 0.08 10176.71826107589367893524 1.8719444520
+ % @LN 0.08 10227.46927617896471929271 1.3825825279
+ % @cutset: 3 connected components.
+ % initially 44 congested vertices:
+ % _gst_find_congested_components found 4 components:
+ % 	component 0:	3 verts,	4 edges
+ % 	component 1:	4 verts,	5 edges
+ % 	component 2:	26 verts,	32 edges
+ % 	component 3:	3 verts,	3 edges
+ % Enumerating 26 congested vertices.
+ % @D deleting 42 slack rows
+ % @PAP adding 8 rows, 390 nz to LP
+ % @PMEM 1032 rows, 2 blocks, 7263 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 393 rows, 574 cols, 6134 nonzeros, 13 slack, 380 tight.
+  % @PAP adding 7 rows, 73 nz to LP
+  % @PL 400 rows, 574 cols, 6207 nonzeros, 11 slack, 389 tight.
+  % Node 0 LP 7 Solution, length = 102655270792599120.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 8
+ % 0 fractional variables
+ % @LO 0.08 10227.46927617896471929271 1.3825825279
+ % @LN 0.08 10265.52707925991126103327 1.0156137155
+ % Fixed 0 vars to 0 and 1 vars to 1.
+ % @cutset: 5 connected components.
+ % initially 35 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	14 verts,	13 edges
+ % Enumerating 14 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 24 rows, 2847 nz to LP
+ % @PMEM 1056 rows, 2 blocks, 4392 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 413 rows, 574 cols, 8681 nonzeros, 37 slack, 376 tight.
+  % @PAP adding 3 rows, 27 nz to LP
+  % @PL 416 rows, 574 cols, 8708 nonzeros, 36 slack, 380 tight.
+  % @PAP adding 1 rows, 3 nz to LP
+  % @PL 417 rows, 574 cols, 8711 nonzeros, 37 slack, 380 tight.
+  % @PAP adding 1 rows, 4 nz to LP
+  % @PL 418 rows, 574 cols, 8715 nonzeros, 37 slack, 381 tight.
+  % @PAP adding 1 rows, 2 nz to LP
+  % @PL 419 rows, 574 cols, 8717 nonzeros, 37 slack, 382 tight.
+  % Node 0 LP 8 Solution, length = 102904176992201936.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 24
+ % 10 fractional variables
+ % @LO 0.09 10265.52707925991126103327 1.0156137155
+ % @LN 0.09 10290.41769922019375371747 0.7756082368
+ % @UO 0.09 10370.85490407946235791314 0.7756082368
+ % @UN 0.09 10363.50616615020953759085 0.7052484532
+ % Fixed 0 vars to 0 and 6 vars to 1.
+ % @cutset: 4 connected components.
+ % initially 31 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	19 verts,	21 edges
+ % Enumerating 19 congested vertices.
+ % @D deleting 37 slack rows
+ % @PAP adding 12 rows, 758 nz to LP
+ % @PMEM 1068 rows, 2 blocks, 3622 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 394 rows, 574 cols, 8011 nonzeros, 27 slack, 367 tight.
+  % @PAP adding 3 rows, 57 nz to LP
+  % @PL 397 rows, 574 cols, 8068 nonzeros, 28 slack, 369 tight.
+  % @PAP adding 4 rows, 240 nz to LP
+  % @PL 401 rows, 574 cols, 8308 nonzeros, 28 slack, 373 tight.
+  % Node 0 LP 9 Solution, length = 103022580474827616.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 12
+ % 34 fractional variables
+ % @LO 0.09 10290.41769922019375371747 0.7052484532
+ % @LN 0.09 10302.25804748276095779147 0.5909980434
+ % Fixed 0 vars to 0 and 5 vars to 1.
+ % @cutset: 3 connected components.
+ % initially 61 congested vertices:
+ % _gst_find_congested_components found 3 components:
+ % 	component 0:	3 verts,	3 edges
+ % 	component 1:	13 verts,	18 edges
+ % 	component 2:	14 verts,	14 edges
+ % Enumerating 13 congested vertices.
+ % Enumerating 14 congested vertices.
+ % @D deleting 28 slack rows
+ % @PAP adding 6 rows, 331 nz to LP
+ % @PMEM 1074 rows, 2 blocks, 3285 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 379 rows, 574 cols, 7856 nonzeros, 3 slack, 376 tight.
+  % @PAP adding 1 rows, 15 nz to LP
+  % @PL 380 rows, 574 cols, 7871 nonzeros, 9 slack, 371 tight.
+  % @PAP adding 1 rows, 17 nz to LP
+  % @PL 381 rows, 574 cols, 7888 nonzeros, 6 slack, 375 tight.
+  % Node 0 LP 10 Solution, length = 103084863638306592.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 6
+ % 22 fractional variables
+ % @LO 0.10 10302.25804748276095779147 0.5909980434
+ % @LN 0.10 10308.48636383065968402661 0.5308994990
+ % @UO 0.10 10363.50616615020953759085 0.5308994990
+ % @UN 0.10 10358.69861892077278753277 0.4847351674
+ % @cutset: 4 connected components.
+ % initially 35 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	13 verts,	17 edges
+ % 	component 1:	9 verts,	10 edges
+ % Enumerating 13 congested vertices.
+ % @D deleting 6 slack rows
+ % @PAP adding 18 rows, 933 nz to LP
+ % @PMEM 1092 rows, 2 blocks, 2334 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 393 rows, 574 cols, 8727 nonzeros, 33 slack, 360 tight.
+  % @PAP adding 20 rows, 547 nz to LP
+  % @PL 413 rows, 574 cols, 9274 nonzeros, 43 slack, 370 tight.
+  % @PAP adding 3 rows, 35 nz to LP
+  % @PL 416 rows, 574 cols, 9309 nonzeros, 38 slack, 378 tight.
+  % @PAP adding 1 rows, 3 nz to LP
+  % @PL 417 rows, 574 cols, 9312 nonzeros, 45 slack, 372 tight.
+  % Node 0 LP 11 Solution, length = 103163751897147984.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 18
+ % 42 fractional variables
+ % @LO 0.11 10308.48636383065968402661 0.4847351674
+ % @LN 0.11 10316.37518971479767060373 0.4085786329
+ % Fixed 0 vars to 0 and 2 vars to 1.
+ % @cutset: 2 connected components.
+ % initially 48 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	38 verts,	42 edges
+ % Enumerating 38 congested vertices.
+ % @D deleting 45 slack rows
+ % @PAP adding 10 rows, 626 nz to LP
+ % @PMEM 1102 rows, 2 blocks, 1698 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 382 rows, 574 cols, 8512 nonzeros, 15 slack, 367 tight.
+  % @PAP adding 11 rows, 171 nz to LP
+  % @PL 393 rows, 574 cols, 8683 nonzeros, 21 slack, 372 tight.
+  % @PAP adding 3 rows, 11 nz to LP
+  % @PL 396 rows, 574 cols, 8694 nonzeros, 22 slack, 374 tight.
+  % Node 0 LP 12 Solution, length = 103206182736068288.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 10
+ % 47 fractional variables
+ % @LO 0.12 10316.37518971479767060373 0.4085786329
+ % @LN 0.12 10320.61827360682946164161 0.3676170793
+ % Fixed 0 vars to 0 and 3 vars to 1.
+ % @cutset: 2 connected components.
+ % initially 48 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	44 verts,	49 edges
+ % Enumerating 44 congested vertices.
+ % @D deleting 22 slack rows
+ % @PAP adding 15 rows, 648 nz to LP
+ % @PMEM 1117 rows, 2 blocks, 1035 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 389 rows, 574 cols, 8703 nonzeros, 24 slack, 365 tight.
+  % @PAP adding 10 rows, 96 nz to LP
+  % @PL 399 rows, 574 cols, 8799 nonzeros, 26 slack, 373 tight.
+  % @PAP adding 2 rows, 4 nz to LP
+  % @PL 401 rows, 574 cols, 8803 nonzeros, 26 slack, 375 tight.
+  % @PAP adding 2 rows, 6 nz to LP
+  % @PL 403 rows, 574 cols, 8809 nonzeros, 26 slack, 377 tight.
+  % @PAP adding 1 rows, 4 nz to LP
+  % @PL 404 rows, 574 cols, 8813 nonzeros, 27 slack, 377 tight.
+  % Node 0 LP 13 Solution, length = 103245900897207440.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 15
+ % 59 fractional variables
+ % @LO 0.13 10320.61827360682946164161 0.3676170793
+ % @LN 0.13 10324.59008972074479970615 0.3292742694
+ % @UO 0.13 10358.69861892077278753277 0.3292742694
+ % @UN 0.13 10339.39054949007368122693 0.1431463460
+ % Fixed 12 vars to 0 and 10 vars to 1.
+ % initially 78 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	60 verts,	69 edges
+ % Enumerating 60 congested vertices.
+ % @D deleting 27 slack rows
+ % @PAP adding 11 rows, 750 nz to LP
+ % @PMEM 1128 rows, 2 blocks, 274 nzfree, 64 nzwasted, 25920 nztotal
+  % @PL 388 rows, 574 cols, 8791 nonzeros, 15 slack, 373 tight.
+  % @PAP adding 2 rows, 22 nz to LP
+  % @PL 390 rows, 574 cols, 8813 nonzeros, 12 slack, 378 tight.
+  % Node 0 LP 14 Solution, length = 103246411726925776.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 11
+ % 58 fractional variables
+ % @LO 0.14 10324.59008972074479970615 0.1431463460
+ % @LN 0.14 10324.64117269257803854998 0.1426522843
+ % @UO 0.14 10339.39054949007368122693 0.1426522843
+ % @UN 0.14 10338.03827788167473045178 0.1295904003
+ % Fixed 0 vars to 0 and 1 vars to 1.
+ % initially 79 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	62 verts,	72 edges
+ % Enumerating 62 congested vertices.
+ % @D deleting 12 slack rows
+ % Entering garbage_collect_pool
+ % @PMEM 1128 rows, 2 blocks, 274 nzfree, 64 nzwasted, 25920 nztotal
+ % @PAP adding 13 rows, 940 nz to LP
+ % @PMEM 1141 rows, 3 blocks, 12268 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 391 rows, 574 cols, 9090 nonzeros, 16 slack, 375 tight.
+  % @PAP adding 1 rows, 74 nz to LP
+  % @PL 392 rows, 574 cols, 9164 nonzeros, 16 slack, 376 tight.
+  % Node 0 LP 15 Solution, length = 103247126658740272.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 13
+ % 62 fractional variables
+ % @LO 0.14 10324.64117269257803854998 0.1295904003
+ % @LN 0.14 10324.71266587402715231292 0.1288988457
+ % @UO 0.14 10338.03827788167473045178 0.1288988457
+ % @UN 0.14 10337.75655687172184116207 0.1261771926
+ % initially 82 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	68 verts,	78 edges
+ % Enumerating 68 congested vertices.
+ % @D deleting 16 slack rows
+ % @PAP adding 10 rows, 943 nz to LP
+ % @PMEM 1151 rows, 3 blocks, 11315 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 386 rows, 574 cols, 9163 nonzeros, 12 slack, 374 tight.
+  % Node 0 LP 16 Solution, length = 103248018872582624.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 10
+ % 55 fractional variables
+ % @LO 0.15 10324.71266587402715231292 0.1261771926
+ % @LN 0.15 10324.80188725826155859977 0.1253141293
+ % @UO 0.15 10337.75655687172184116207 0.1253141293
+ % @UN 0.15 10337.01695925207422988024 0.1181682495
+ % Fixed 0 vars to 0 and 1 vars to 1.
+ % initially 80 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	57 verts,	64 edges
+ % Enumerating 57 congested vertices.
+ % @D deleting 12 slack rows
+ % @PAP adding 7 rows, 796 nz to LP
+ % @PMEM 1158 rows, 3 blocks, 10512 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 381 rows, 574 cols, 8835 nonzeros, 7 slack, 374 tight.
+  % Node 0 LP 17 Solution, length = 103248070237087488.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 7
+ % 55 fractional variables
+ % @LO 0.15 10324.80188725826155859977 0.1181682495
+ % @LN 0.15 10324.80702370874860207550 0.1181185597
+ % @UO 0.16 10337.01695925207422988024 0.1181185597
+ % @UN 0.16 10336.01333087915918440558 0.1084200147
+ % Fixed 2 vars to 0 and 2 vars to 1.
+ % initially 81 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	59 verts,	66 edges
+ % Enumerating 59 congested vertices.
+ % @D deleting 7 slack rows
+ % @PAP adding 8 rows, 731 nz to LP
+ % @PMEM 1166 rows, 3 blocks, 9773 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 382 rows, 574 cols, 8821 nonzeros, 8 slack, 374 tight.
+  % Node 0 LP 18 Solution, length = 103248217580927776.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 8
+ % 54 fractional variables
+ % @LO 0.16 10324.80702370874860207550 0.1084200147
+ % @LN 0.16 10324.82175809277759981342 0.1082774608
+ % @UO 0.16 10336.01333087915918440558 0.1082774608
+ % @UN 0.16 10334.20247390388976782560 0.0907734858
+ % Fixed 8 vars to 0 and 4 vars to 1.
+ % initially 80 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	60 verts,	67 edges
+ % Enumerating 60 congested vertices.
+ % @D deleting 8 slack rows
+ % @PAP adding 9 rows, 930 nz to LP
+ % @PMEM 1175 rows, 3 blocks, 8834 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 383 rows, 574 cols, 9032 nonzeros, 8 slack, 375 tight.
+  % @PAP adding 4 rows, 325 nz to LP
+  % @PL 387 rows, 574 cols, 9357 nonzeros, 10 slack, 377 tight.
+  % @PAP adding 1 rows, 130 nz to LP
+  % @PL 388 rows, 574 cols, 9487 nonzeros, 11 slack, 377 tight.
+  % Node 0 LP 19 Solution, length = 103248380269020384.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 9
+ % 58 fractional variables
+ % @LO 0.17 10324.82175809277759981342 0.0907734858
+ % @LN 0.17 10324.83802690203810925595 0.0906160589
+ % initially 82 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	66 verts,	74 edges
+ % Enumerating 66 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 9 rows, 856 nz to LP
+ % @PMEM 1184 rows, 3 blocks, 7969 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 386 rows, 574 cols, 9309 nonzeros, 13 slack, 373 tight.
+  % @PAP adding 3 rows, 252 nz to LP
+  % @PL 389 rows, 574 cols, 9561 nonzeros, 15 slack, 374 tight.
+  % Node 0 LP 20 Solution, length = 103248923045091632.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 9
+ % 51 fractional variables
+ % @LO 0.17 10324.83802690203810925595 0.0906160589
+ % @LN 0.17 10324.89230450916329573374 0.0900908359
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	62 verts,	70 edges
+ % Enumerating 62 congested vertices.
+ % @D deleting 15 slack rows
+ % @PAP adding 7 rows, 655 nz to LP
+ % @PMEM 1191 rows, 3 blocks, 7307 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 381 rows, 574 cols, 8932 nonzeros, 4 slack, 377 tight.
+  % Node 0 LP 21 Solution, length = 103248924735213680.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 7
+ % 53 fractional variables
+ % @LO 0.18 10324.89230450916329573374 0.0900908359
+ % @LN 0.18 10324.89247352136771951336 0.0900892005
+ % initially 76 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	63 verts,	72 edges
+ % Enumerating 63 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 7 rows, 670 nz to LP
+ % @PMEM 1198 rows, 3 blocks, 6630 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 384 rows, 574 cols, 9364 nonzeros, 6 slack, 378 tight.
+  % @PAP adding 4 rows, 92 nz to LP
+  % @PL 388 rows, 574 cols, 9456 nonzeros, 10 slack, 378 tight.
+  % @PAP adding 1 rows, 2 nz to LP
+  % @PL 389 rows, 574 cols, 9458 nonzeros, 5 slack, 384 tight.
+  % Node 0 LP 22 Solution, length = 103249154649290784.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 7
+ % 65 fractional variables
+ % @LO 0.18 10324.89247352136771951336 0.0900892005
+ % @LN 0.18 10324.91546492907764331903 0.0898667217
+ % initially 83 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	69 verts,	79 edges
+ % Enumerating 69 congested vertices.
+ % @D deleting 5 slack rows
+ % @PAP adding 8 rows, 793 nz to LP
+ % @PMEM 1206 rows, 3 blocks, 5829 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 392 rows, 574 cols, 9900 nonzeros, 11 slack, 381 tight.
+  % Node 0 LP 23 Solution, length = 103249158354509920.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 8
+ % 67 fractional variables
+ % @LO 0.19 10324.91546492907764331903 0.0898667217
+ % @LN 0.19 10324.91583545099274488166 0.0898631363
+ % initially 84 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	70 verts,	81 edges
+ % Enumerating 70 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 8 rows, 887 nz to LP
+ % @PMEM 1214 rows, 3 blocks, 4934 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 389 rows, 574 cols, 9721 nonzeros, 11 slack, 378 tight.
+  % Node 0 LP 24 Solution, length = 103249936781570512.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 8
+ % 46 fractional variables
+ % @LO 0.19 10324.91583545099274488166 0.0898631363
+ % @LN 0.19 10324.99367815705045359209 0.0891098831
+ % initially 76 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	57 verts,	60 edges
+ % Enumerating 57 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 5 rows, 545 nz to LP
+ % @PMEM 1219 rows, 3 blocks, 4384 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 383 rows, 574 cols, 9085 nonzeros, 4 slack, 379 tight.
+  % Node 0 LP 25 Solution, length = 103249940944766320.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 5
+ % 48 fractional variables
+ % @LO 0.20 10324.99367815705045359209 0.0891098831
+ % @LN 0.20 10324.99409447663128958084 0.0891058546
+ % initially 77 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	58 verts,	62 edges
+ % Enumerating 58 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 5 rows, 556 nz to LP
+ % @PMEM 1224 rows, 3 blocks, 3823 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 384 rows, 574 cols, 9201 nonzeros, 3 slack, 381 tight.
+  % Node 0 LP 26 Solution, length = 103249987771503808.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 5
+ % 49 fractional variables
+ % @LO 0.20 10324.99409447663128958084 0.0891058546
+ % @LN 0.20 10324.99877715038019232452 0.0890605422
+ % initially 78 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	61 verts,	65 edges
+ % Enumerating 61 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 6 rows, 621 nz to LP
+ % @PMEM 1230 rows, 3 blocks, 3196 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 387 rows, 574 cols, 9521 nonzeros, 6 slack, 381 tight.
+  % Node 0 LP 27 Solution, length = 103249991934699616.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 6
+ % 51 fractional variables
+ % @LO 0.21 10324.99877715038019232452 0.0890605422
+ % @LN 0.21 10324.99919346996102831326 0.0890565136
+ % initially 79 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	62 verts,	67 edges
+ % Enumerating 62 congested vertices.
+ % @D deleting 6 slack rows
+ % @PAP adding 6 rows, 635 nz to LP
+ % @PMEM 1236 rows, 3 blocks, 2555 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 387 rows, 574 cols, 9543 nonzeros, 7 slack, 380 tight.
+  % @PAP adding 8 rows, 593 nz to LP
+  % @PL 395 rows, 574 cols, 10136 nonzeros, 14 slack, 381 tight.
+  % Node 0 LP 28 Solution, length = 103251048852327536.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 6
+ % 72 fractional variables
+ % @LO 0.22 10324.99919346996102831326 0.0890565136
+ % @LN 0.22 10325.10488523275307670701 0.0880337761
+ % initially 84 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	71 verts,	84 edges
+ % Enumerating 71 congested vertices.
+ % @D deleting 14 slack rows
+ % @PAP adding 10 rows, 1116 nz to LP
+ % @PMEM 1246 rows, 3 blocks, 1429 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 391 rows, 574 cols, 10041 nonzeros, 10 slack, 381 tight.
+  % Node 0 LP 29 Solution, length = 103251054694770960.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 10
+ % 74 fractional variables
+ % @LO 0.22 10325.10488523275307670701 0.0880337761
+ % @LN 0.22 10325.10546947709553933237 0.0880281226
+ % initially 85 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	72 verts,	86 edges
+ % Enumerating 72 congested vertices.
+ % @D deleting 10 slack rows
+ % @PAP adding 10 rows, 1126 nz to LP
+ % @PMEM 1256 rows, 3 blocks, 293 nzfree, 77 nzwasted, 38880 nztotal
+  % @PL 391 rows, 574 cols, 10083 nonzeros, 8 slack, 383 tight.
+  % @PAP adding 1 rows, 113 nz to LP
+  % @PL 392 rows, 574 cols, 10196 nonzeros, 9 slack, 383 tight.
+  % Node 0 LP 30 Solution, length = 103251585823070128.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 10
+ % 70 fractional variables
+ % @LO 0.23 10325.10546947709553933237 0.0880281226
+ % @LN 0.23 10325.15858230701269349083 0.0875141707
+ % initially 82 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	65 verts,	80 edges
+ % Enumerating 65 congested vertices.
+ % @D deleting 9 slack rows
+ % Entering garbage_collect_pool
+ % @PMEM 1256 rows, 3 blocks, 293 nzfree, 77 nzwasted, 38880 nztotal
+ % @PAP adding 12 rows, 1280 nz to LP
+ % @PMEM 1268 rows, 4 blocks, 11819 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 395 rows, 574 cols, 10692 nonzeros, 13 slack, 382 tight.
+  % Node 0 LP 31 Solution, length = 103251589161908016.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 12
+ % 72 fractional variables
+ % @LO 0.23 10325.15858230701269349083 0.0875141707
+ % @LN 0.23 10325.15891619080139207654 0.0875109399
+ % initially 83 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	66 verts,	82 edges
+ % Enumerating 66 congested vertices.
+ % @D deleting 13 slack rows
+ % @PAP adding 12 rows, 1307 nz to LP
+ % @PMEM 1280 rows, 4 blocks, 10500 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 394 rows, 574 cols, 10578 nonzeros, 13 slack, 381 tight.
+  % Node 0 LP 32 Solution, length = 103251700288046768.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 12
+ % 72 fractional variables
+ % @LO 0.24 10325.15891619080139207654 0.0875109399
+ % @LN 0.24 10325.17002880467589420732 0.0874034075
+ % initially 84 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	68 verts,	82 edges
+ % Enumerating 68 congested vertices.
+ % @D deleting 13 slack rows
+ % @PAP adding 11 rows, 1153 nz to LP
+ % @PMEM 1291 rows, 4 blocks, 9336 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 392 rows, 574 cols, 10604 nonzeros, 11 slack, 381 tight.
+  % Node 0 LP 33 Solution, length = 103251703626884672.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 11
+ % 73 fractional variables
+ % @LO 0.24 10325.17002880467589420732 0.0874034075
+ % @LN 0.24 10325.17036268846641178243 0.0874001766
+ % initially 85 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	69 verts,	84 edges
+ % Enumerating 69 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 11 rows, 1195 nz to LP
+ % @PMEM 1302 rows, 4 blocks, 8130 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 392 rows, 574 cols, 10651 nonzeros, 20 slack, 372 tight.
+  % @PAP adding 7 rows, 417 nz to LP
+  % @PL 399 rows, 574 cols, 11068 nonzeros, 16 slack, 383 tight.
+  % Node 0 LP 34 Solution, length = 103255583906353184.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 11
+ % 68 fractional variables
+ % @LO 0.25 10325.17036268846641178243 0.0874001766
+ % @LN 0.25 10325.55839063531857391354 0.0836453833
+ % Fixed 4 vars to 0 and 1 vars to 1.
+ % initially 86 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	71 verts,	84 edges
+ % Enumerating 71 congested vertices.
+ % @D deleting 16 slack rows
+ % @PAP adding 10 rows, 1127 nz to LP
+ % @PMEM 1312 rows, 4 blocks, 6993 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 393 rows, 574 cols, 10692 nonzeros, 10 slack, 383 tight.
+  % Node 0 LP 35 Solution, length = 103255592191338592.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 10
+ % 70 fractional variables
+ % @LO 0.25 10325.55839063531857391354 0.0836453833
+ % @LN 0.25 10325.55921913386009691749 0.0836373662
+ % initially 87 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	72 verts,	86 edges
+ % Enumerating 72 congested vertices.
+ % @D deleting 10 slack rows
+ % @PAP adding 10 rows, 1147 nz to LP
+ % @PMEM 1322 rows, 4 blocks, 5836 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 393 rows, 574 cols, 10711 nonzeros, 14 slack, 379 tight.
+  % Node 0 LP 36 Solution, length = 103257926448109984.000000, 0.00/0.00/0.00/0.01/0.00/0.00/0.00 10
+ % 28 fractional variables
+ % @LO 0.26 10325.55921913386009691749 0.0836373662
+ % @LN 0.26 10325.79264481099926342722 0.0813785980
+ % initially 70 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	38 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 14 slack rows
+ % @PAP adding 2 rows, 188 nz to LP
+ % @PMEM 1324 rows, 4 blocks, 5646 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 381 rows, 574 cols, 9544 nonzeros, 2 slack, 379 tight.
+  % Node 0 LP 37 Solution, length = 103257926489516192.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 28 fractional variables
+ % @LO 0.26 10325.79264481099926342722 0.0813785980
+ % @LN 0.26 10325.79264895161941240076 0.0813785580
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	38 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 193 nz to LP
+ % @PMEM 1326 rows, 4 blocks, 5451 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 381 rows, 574 cols, 9497 nonzeros, 2 slack, 379 tight.
+  % Node 0 LP 38 Solution, length = 103257953462156816.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 28 fractional variables
+ % @LO 0.26 10325.79264895161941240076 0.0813785580
+ % @LN 0.26 10325.79534621568200236652 0.0813524576
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	38 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 139 nz to LP
+ % @PMEM 1328 rows, 4 blocks, 5310 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 381 rows, 574 cols, 9422 nonzeros, 2 slack, 379 tight.
+  % Node 0 LP 39 Solution, length = 103257953503563024.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 28 fractional variables
+ % @LO 0.27 10325.79534621568200236652 0.0813524576
+ % @LN 0.27 10325.79535035630215134006 0.0813524176
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	38 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 144 nz to LP
+ % @PMEM 1330 rows, 4 blocks, 5164 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 381 rows, 574 cols, 9429 nonzeros, 2 slack, 379 tight.
+  % Node 0 LP 40 Solution, length = 103257955422704288.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 28 fractional variables
+ % @LO 0.27 10325.79535035630215134006 0.0813524176
+ % @LN 0.27 10325.79554227042899583466 0.0813505605
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	38 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 141 nz to LP
+ % @PMEM 1332 rows, 4 blocks, 5021 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 381 rows, 574 cols, 9450 nonzeros, 2 slack, 379 tight.
+  % Node 0 LP 41 Solution, length = 103257955464110496.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 28 fractional variables
+ % @LO 0.27 10325.79554227042899583466 0.0813505605
+ % @LN 0.27 10325.79554641104914480820 0.0813505204
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	38 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 146 nz to LP
+ % @PMEM 1334 rows, 4 blocks, 4873 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 381 rows, 574 cols, 9455 nonzeros, 1 slack, 380 tight.
+  % Node 0 LP 42 Solution, length = 103257989387938752.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.27 10325.79554641104914480820 0.0813505204
+ % @LN 0.27 10325.79893879387600463815 0.0813176937
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 2 rows, 200 nz to LP
+ % @PMEM 1336 rows, 4 blocks, 4671 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 382 rows, 574 cols, 9551 nonzeros, 2 slack, 380 tight.
+  % Node 0 LP 43 Solution, length = 103257989429344976.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.28 10325.79893879387600463815 0.0813176937
+ % @LN 0.28 10325.79894293449797260109 0.0813176536
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 205 nz to LP
+ % @PMEM 1338 rows, 4 blocks, 4464 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 382 rows, 574 cols, 9558 nonzeros, 1 slack, 381 tight.
+  % Node 0 LP 44 Solution, length = 103258052319411904.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.28 10325.79894293449797260109 0.0813176536
+ % @LN 0.28 10325.80523194119086838327 0.0812567974
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 2 rows, 206 nz to LP
+ % @PMEM 1340 rows, 4 blocks, 4256 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9667 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 45 Solution, length = 103258052360818128.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.28 10325.80523194119086838327 0.0812567974
+ % @LN 0.28 10325.80523608181283634622 0.0812567573
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 211 nz to LP
+ % @PMEM 1342 rows, 4 blocks, 4043 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9675 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 46 Solution, length = 103258079333458736.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.28 10325.80523608181283634622 0.0812567573
+ % @LN 0.28 10325.80793334587360732257 0.0812306569
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 210 nz to LP
+ % @PMEM 1344 rows, 4 blocks, 3831 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9679 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 47 Solution, length = 103258079374864960.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.29 10325.80793334587360732257 0.0812306569
+ % @LN 0.29 10325.80793748649557528552 0.0812306169
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 215 nz to LP
+ % @PMEM 1346 rows, 4 blocks, 3614 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9686 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 48 Solution, length = 103258081294006224.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.29 10325.80793748649557528552 0.0812306169
+ % @LN 0.29 10325.80812940062241978012 0.0812287598
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 210 nz to LP
+ % @PMEM 1348 rows, 4 blocks, 3402 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9688 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 49 Solution, length = 103258081335412432.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 31 fractional variables
+ % @LO 0.30 10325.80812940062241978012 0.0812287598
+ % @LN 0.30 10325.80813354124256875366 0.0812287197
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 215 nz to LP
+ % @PMEM 1350 rows, 4 blocks, 3185 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9693 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 50 Solution, length = 103258108308053056.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.30 10325.80813354124256875366 0.0812287197
+ % @LN 0.30 10325.81083080530515871942 0.0812026194
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 214 nz to LP
+ % @PMEM 1352 rows, 4 blocks, 2969 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9694 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 51 Solution, length = 103258108349459264.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.30 10325.81083080530515871942 0.0812026194
+ % @LN 0.30 10325.81083494592712668236 0.0812025793
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 219 nz to LP
+ % @PMEM 1354 rows, 4 blocks, 2748 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9701 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 52 Solution, length = 103258840600305808.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.30 10325.81083494592712668236 0.0812025793
+ % @LN 0.30 10325.88406003058116766624 0.0804940090
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 209 nz to LP
+ % @PMEM 1356 rows, 4 blocks, 2537 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9658 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 53 Solution, length = 103258840641712032.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.30 10325.88406003058116766624 0.0804940090
+ % @LN 0.30 10325.88406417120313562918 0.0804939690
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 213 nz to LP
+ % @PMEM 1358 rows, 4 blocks, 2322 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9654 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 54 Solution, length = 103258867614352640.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.31 10325.88406417120313562918 0.0804939690
+ % @LN 0.31 10325.88676143526390660554 0.0804678686
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 213 nz to LP
+ % @PMEM 1360 rows, 4 blocks, 2107 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9648 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 55 Solution, length = 103258867655758864.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.31 10325.88676143526390660554 0.0804678686
+ % @LN 0.31 10325.88676557588587456848 0.0804678285
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 217 nz to LP
+ % @PMEM 1362 rows, 4 blocks, 1888 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9654 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 56 Solution, length = 103258869574900112.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.31 10325.88676557588587456848 0.0804678285
+ % @LN 0.31 10325.88695749001090007368 0.0804659715
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 213 nz to LP
+ % @PMEM 1364 rows, 4 blocks, 1673 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9646 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 57 Solution, length = 103258869616306336.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.32 10325.88695749001090007368 0.0804659715
+ % @LN 0.32 10325.88696163063286803663 0.0804659314
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 217 nz to LP
+ % @PMEM 1366 rows, 4 blocks, 1454 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9650 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 58 Solution, length = 103258896588946944.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.32 10325.88696163063286803663 0.0804659314
+ % @LN 0.32 10325.88965889469363901298 0.0804398310
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 217 nz to LP
+ % @PMEM 1368 rows, 4 blocks, 1235 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9652 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 59 Solution, length = 103258896630353168.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.32 10325.88965889469363901298 0.0804398310
+ % @LN 0.32 10325.88966303531742596533 0.0804397910
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 221 nz to LP
+ % @PMEM 1370 rows, 4 blocks, 1012 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9658 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 60 Solution, length = 103258959520420112.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.32 10325.88966303531742596533 0.0804397910
+ % @LN 0.32 10325.89595204201032174751 0.0803789347
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 212 nz to LP
+ % @PMEM 1372 rows, 4 blocks, 798 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9652 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 61 Solution, length = 103258959561826336.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 31 fractional variables
+ % @LO 0.33 10325.89595204201032174751 0.0803789347
+ % @LN 0.33 10325.89595618263410869986 0.0803788947
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 217 nz to LP
+ % @PMEM 1374 rows, 4 blocks, 579 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9660 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 62 Solution, length = 103258986534466944.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.33 10325.89595618263410869986 0.0803788947
+ % @LN 0.33 10325.89865344669487967622 0.0803527943
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 216 nz to LP
+ % @PMEM 1376 rows, 4 blocks, 361 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9664 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 63 Solution, length = 103258986575873168.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.33 10325.89865344669487967622 0.0803527943
+ % @LN 0.33 10325.89865758731684763916 0.0803527542
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 221 nz to LP
+ % @PMEM 1378 rows, 4 blocks, 138 nzfree, 219 nzwasted, 51840 nztotal
+  % @PL 383 rows, 574 cols, 9671 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 64 Solution, length = 103258988495014416.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 31 fractional variables
+ % @LO 0.34 10325.89865758731684763916 0.0803527542
+ % @LN 0.34 10325.89884950144187314436 0.0803508972
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % Entering garbage_collect_pool
+ % @PMEM 1378 rows, 4 blocks, 138 nzfree, 219 nzwasted, 51840 nztotal
+ % @PAP adding 2 rows, 216 nz to LP
+ % @PMEM 1380 rows, 5 blocks, 12857 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 383 rows, 574 cols, 9673 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 65 Solution, length = 103258988536420640.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.34 10325.89884950144187314436 0.0803508972
+ % @LN 0.34 10325.89885364206384110730 0.0803508571
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 221 nz to LP
+ % @PMEM 1382 rows, 5 blocks, 12634 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 383 rows, 574 cols, 9678 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 66 Solution, length = 103259015509061248.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.34 10325.89885364206384110730 0.0803508571
+ % @LN 0.34 10325.90155090612461208366 0.0803247567
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 220 nz to LP
+ % @PMEM 1384 rows, 5 blocks, 12412 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 383 rows, 574 cols, 9679 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 67 Solution, length = 103259015550467472.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.34 10325.90155090612461208366 0.0803247567
+ % @LN 0.34 10325.90155504674658004660 0.0803247167
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 225 nz to LP
+ % @PMEM 1386 rows, 5 blocks, 12185 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 383 rows, 574 cols, 9686 nonzeros, 1 slack, 382 tight.
+  % Node 0 LP 68 Solution, length = 103259467737091536.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.34 10325.90155504674658004660 0.0803247167
+ % @LN 0.34 10325.94677370915269420948 0.0798871535
+ % Fixed 0 vars to 0 and 1 vars to 1.
+ % initially 69 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 2 rows, 185 nz to LP
+ % @PMEM 1388 rows, 5 blocks, 11998 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9764 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 69 Solution, length = 103259467778497760.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 31 fractional variables
+ % @LO 0.35 10325.94677370915269420948 0.0798871535
+ % @LN 0.35 10325.94677784977648116183 0.0798871134
+ % initially 70 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 189 nz to LP
+ % @PMEM 1390 rows, 5 blocks, 11807 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9746 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 70 Solution, length = 103259494751138368.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.35 10325.94677784977648116183 0.0798871134
+ % @LN 0.35 10325.94947511383725213818 0.0798610131
+ % initially 70 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 189 nz to LP
+ % @PMEM 1392 rows, 5 blocks, 11616 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9726 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 71 Solution, length = 103259494792544592.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.35 10325.94947511383725213818 0.0798610131
+ % @LN 0.35 10325.94947925445922010113 0.0798609730
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 193 nz to LP
+ % @PMEM 1394 rows, 5 blocks, 11421 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9732 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 72 Solution, length = 103259496711685840.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.36 10325.94947925445922010113 0.0798609730
+ % @LN 0.36 10325.94967116858424560633 0.0798591159
+ % initially 70 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 189 nz to LP
+ % @PMEM 1396 rows, 5 blocks, 11230 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9710 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 73 Solution, length = 103259496753092064.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.36 10325.94967116858424560633 0.0798591159
+ % @LN 0.36 10325.94967530920621356927 0.0798590759
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 193 nz to LP
+ % @PMEM 1398 rows, 5 blocks, 11035 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9714 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 74 Solution, length = 103259523725732672.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.36 10325.94967530920621356927 0.0798590759
+ % @LN 0.36 10325.95237257326698454563 0.0798329755
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 193 nz to LP
+ % @PMEM 1400 rows, 5 blocks, 10840 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9716 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 75 Solution, length = 103259523767138896.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.36 10325.95237257326698454563 0.0798329755
+ % @LN 0.36 10325.95237671388895250857 0.0798329354
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 197 nz to LP
+ % @PMEM 1402 rows, 5 blocks, 10641 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9722 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 76 Solution, length = 103259563640637376.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 31 fractional variables
+ % @LO 0.37 10325.95237671388895250857 0.0798329354
+ % @LN 0.37 10325.95636406373705540318 0.0797943514
+ % initially 70 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 189 nz to LP
+ % @PMEM 1404 rows, 5 blocks, 10450 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9657 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 77 Solution, length = 103259563682043584.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.37 10325.95636406373705540318 0.0797943514
+ % @LN 0.37 10325.95636820435902336612 0.0797943114
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 193 nz to LP
+ % @PMEM 1406 rows, 5 blocks, 10255 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9659 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 78 Solution, length = 103259586657205824.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.37 10325.95636820435902336612 0.0797943114
+ % @LN 0.37 10325.95866572058184829075 0.0797720792
+ % initially 70 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 199 nz to LP
+ % @PMEM 1408 rows, 5 blocks, 10054 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9652 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 79 Solution, length = 103259586698612048.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 2
+ % 31 fractional variables
+ % @LO 0.38 10325.95866572058184829075 0.0797720792
+ % @LN 0.38 10325.95866986120563524310 0.0797720391
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 203 nz to LP
+ % @PMEM 1410 rows, 5 blocks, 9849 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9661 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 80 Solution, length = 103259588655945008.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 40 fractional variables
+ % @LO 0.38 10325.95866986120563524310 0.0797720391
+ % @LN 0.38 10325.95886559450082131661 0.0797701451
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	46 verts,	52 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 46 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 207 nz to LP
+ % @PMEM 1412 rows, 5 blocks, 9640 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9670 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 81 Solution, length = 103259588697351216.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 40 fractional variables
+ % @LO 0.38 10325.95886559450082131661 0.0797701451
+ % @LN 0.38 10325.95886973512097029015 0.0797701050
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	46 verts,	52 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 46 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 211 nz to LP
+ % @PMEM 1414 rows, 5 blocks, 9427 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9678 nonzeros, 3 slack, 381 tight.
+  % Node 0 LP 82 Solution, length = 103259592615231680.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.38 10325.95886973512097029015 0.0797701050
+ % @LN 0.38 10325.95926152316860680003 0.0797663139
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 2 rows, 193 nz to LP
+ % @PMEM 1416 rows, 5 blocks, 9232 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 383 rows, 574 cols, 9566 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 83 Solution, length = 103259592656637904.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.38 10325.95926152316860680003 0.0797663139
+ % @LN 0.38 10325.95926566379057476297 0.0797662738
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 197 nz to LP
+ % @PMEM 1418 rows, 5 blocks, 9033 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 383 rows, 574 cols, 9563 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 84 Solution, length = 103259615631800128.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.39 10325.95926566379057476297 0.0797662738
+ % @LN 0.39 10325.96156318001339968760 0.0797440416
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 203 nz to LP
+ % @PMEM 1420 rows, 5 blocks, 8828 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 383 rows, 574 cols, 9571 nonzeros, 2 slack, 381 tight.
+  % Node 0 LP 85 Solution, length = 103259615673206352.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.39 10325.96156318001339968760 0.0797440416
+ % @LN 0.39 10325.96156732063536765054 0.0797440016
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 207 nz to LP
+ % @PMEM 1422 rows, 5 blocks, 8619 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 383 rows, 574 cols, 9580 nonzeros, 1 slack, 382 tight.
+  % Node 0 LP 86 Solution, length = 103259617630539312.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 40 fractional variables
+ % @LO 0.39 10325.96156732063536765054 0.0797440016
+ % @LN 0.39 10325.96176305393055372406 0.0797421075
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	46 verts,	52 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 46 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 2 rows, 211 nz to LP
+ % @PMEM 1424 rows, 5 blocks, 8406 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9689 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 87 Solution, length = 103259617671945536.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 40 fractional variables
+ % @LO 0.40 10325.96176305393055372406 0.0797421075
+ % @LN 0.40 10325.96176719455434067640 0.0797420675
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	46 verts,	52 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 46 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 215 nz to LP
+ % @PMEM 1426 rows, 5 blocks, 8189 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9697 nonzeros, 3 slack, 381 tight.
+  % @PAP adding 3 rows, 314 nz to LP
+  % @PL 387 rows, 574 cols, 10011 nonzeros, 5 slack, 382 tight.
+  % Node 0 LP 88 Solution, length = 103259806419291776.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 49 fractional variables
+ % @LO 0.40 10325.96176719455434067640 0.0797420675
+ % @LN 0.40 10325.98064192917809123173 0.0795594241
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	54 verts,	62 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 54 congested vertices.
+ % @D deleting 5 slack rows
+ % @PAP adding 2 rows, 214 nz to LP
+ % @PMEM 1428 rows, 5 blocks, 7973 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9812 nonzeros, 3 slack, 381 tight.
+  % Node 0 LP 89 Solution, length = 103259806460697984.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 49 fractional variables
+ % @LO 0.40 10325.98064192917809123173 0.0795594241
+ % @LN 0.40 10325.98064606979824020527 0.0795593840
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	54 verts,	62 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 54 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 2 rows, 219 nz to LP
+ % @PMEM 1430 rows, 5 blocks, 7752 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 383 rows, 574 cols, 9668 nonzeros, 1 slack, 382 tight.
+  % Node 0 LP 90 Solution, length = 103259833433338608.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 2
+ % 49 fractional variables
+ % @LO 0.41 10325.98064606979824020527 0.0795593840
+ % @LN 0.41 10325.98334333386083017103 0.0795332837
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	54 verts,	62 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 54 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 2 rows, 218 nz to LP
+ % @PMEM 1432 rows, 5 blocks, 7532 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9782 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 91 Solution, length = 103259833474744816.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 49 fractional variables
+ % @LO 0.41 10325.98334333386083017103 0.0795332837
+ % @LN 0.41 10325.98334747448097914457 0.0795332436
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	54 verts,	62 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 54 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 223 nz to LP
+ % @PMEM 1434 rows, 5 blocks, 7307 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9789 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 92 Solution, length = 103259835393886080.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 49 fractional variables
+ % @LO 0.41 10325.98334747448097914457 0.0795332436
+ % @LN 0.41 10325.98353938860782363918 0.0795313865
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	54 verts,	62 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 54 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 218 nz to LP
+ % @PMEM 1436 rows, 5 blocks, 7087 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9794 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 93 Solution, length = 103259835435292304.000000, 0.00/0.00/0.00/0.01/0.00/0.00/0.00 2
+ % 49 fractional variables
+ % @LO 0.42 10325.98353938860782363918 0.0795313865
+ % @LN 0.42 10325.98354352922979160212 0.0795313465
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	54 verts,	62 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 54 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 223 nz to LP
+ % @PMEM 1438 rows, 5 blocks, 6862 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9799 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 94 Solution, length = 103259862407932912.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 49 fractional variables
+ % @LO 0.42 10325.98354352922979160212 0.0795313465
+ % @LN 0.42 10325.98624079329056257848 0.0795052461
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	54 verts,	62 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 54 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 222 nz to LP
+ % @PMEM 1440 rows, 5 blocks, 6638 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9800 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 95 Solution, length = 103259862449339136.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 49 fractional variables
+ % @LO 0.42 10325.98624079329056257848 0.0795052461
+ % @LN 0.42 10325.98624493391434953082 0.0795052060
+ % initially 76 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	54 verts,	62 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 54 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 227 nz to LP
+ % @PMEM 1442 rows, 5 blocks, 6409 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9807 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 96 Solution, length = 103260219042659280.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.42 10325.98624493391434953082 0.0795052060
+ % @LN 0.42 10326.02190426592824223917 0.0791601448
+ % initially 70 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 196 nz to LP
+ % @PMEM 1444 rows, 5 blocks, 6211 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9786 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 97 Solution, length = 103260219084065504.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 31 fractional variables
+ % @LO 0.43 10326.02190426592824223917 0.0791601448
+ % @LN 0.43 10326.02190840655021020211 0.0791601047
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 201 nz to LP
+ % @PMEM 1446 rows, 5 blocks, 6008 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 384 rows, 574 cols, 9778 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 98 Solution, length = 103260222251648896.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 43 fractional variables
+ % @LO 0.43 10326.02190840655021020211 0.0791601047
+ % @LN 0.43 10326.02222516489018744323 0.0791570395
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	50 verts,	55 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 50 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 6 rows, 563 nz to LP
+ % @PMEM 1452 rows, 5 blocks, 5439 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 388 rows, 574 cols, 10129 nonzeros, 4 slack, 384 tight.
+  % Node 0 LP 99 Solution, length = 103260222293055120.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 6
+ % 43 fractional variables
+ % @LO 0.43 10326.02222516489018744323 0.0791570395
+ % @LN 0.43 10326.02222930551215540618 0.0791569995
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	50 verts,	55 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 50 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 6 rows, 576 nz to LP
+ % @PMEM 1458 rows, 5 blocks, 4857 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 390 rows, 574 cols, 10334 nonzeros, 2 slack, 388 tight.
+  % Node 0 LP 100 Solution, length = 103260246056706112.000000, 0.00/0.00/0.00/0.01/0.00/0.00/0.00 6
+ % 31 fractional variables
+ % @LO 0.44 10326.02222930551215540618 0.0791569995
+ % @LN 0.44 10326.02460567061098117847 0.0791340043
+ % initially 71 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 200 nz to LP
+ % @PMEM 1460 rows, 5 blocks, 4655 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 390 rows, 574 cols, 10343 nonzeros, 4 slack, 386 tight.
+  % Node 0 LP 101 Solution, length = 103260246098112336.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 31 fractional variables
+ % @LO 0.44 10326.02460567061098117847 0.0791340043
+ % @LN 0.44 10326.02460981123294914141 0.0791339643
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	37 verts,	40 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 37 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 2 rows, 205 nz to LP
+ % @PMEM 1462 rows, 5 blocks, 4448 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 388 rows, 574 cols, 10158 nonzeros, 4 slack, 384 tight.
+  % Node 0 LP 102 Solution, length = 103260249265695728.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 43 fractional variables
+ % @LO 0.44 10326.02460981123294914141 0.0791339643
+ % @LN 0.44 10326.02492656957292638253 0.0791308991
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	50 verts,	55 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 50 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 6 rows, 610 nz to LP
+ % @PMEM 1468 rows, 5 blocks, 3832 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 390 rows, 574 cols, 10365 nonzeros, 6 slack, 384 tight.
+  % Node 0 LP 103 Solution, length = 103260249307101952.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 6
+ % 43 fractional variables
+ % @LO 0.45 10326.02492656957292638253 0.0791308991
+ % @LN 0.45 10326.02493071019489434548 0.0791308591
+ % initially 76 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	50 verts,	55 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 50 congested vertices.
+ % @D deleting 6 slack rows
+ % @PAP adding 6 rows, 623 nz to LP
+ % @PMEM 1474 rows, 5 blocks, 3203 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 390 rows, 574 cols, 10389 nonzeros, 5 slack, 385 tight.
+  % Node 0 LP 104 Solution, length = 103260296990379504.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 6
+ % 54 fractional variables
+ % @LO 0.45 10326.02493071019489434548 0.0791308591
+ % @LN 0.45 10326.02969903795019490644 0.0790847178
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	56 verts,	65 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 56 congested vertices.
+ % @D deleting 5 slack rows
+ % @PAP adding 3 rows, 263 nz to LP
+ % @PMEM 1477 rows, 5 blocks, 2937 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 388 rows, 574 cols, 10129 nonzeros, 3 slack, 385 tight.
+  % Node 0 LP 105 Solution, length = 103260297031785728.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 3
+ % 54 fractional variables
+ % @LO 0.46 10326.02969903795019490644 0.0790847178
+ % @LN 0.46 10326.02970317857216286939 0.0790846778
+ % initially 76 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	56 verts,	65 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 56 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 3 rows, 271 nz to LP
+ % @PMEM 1480 rows, 5 blocks, 2663 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 388 rows, 574 cols, 10138 nonzeros, 6 slack, 382 tight.
+  % Node 0 LP 106 Solution, length = 103260316915382160.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 55 fractional variables
+ % @LO 0.46 10326.02970317857216286939 0.0790846778
+ % @LN 0.46 10326.03169153821545478422 0.0790654372
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	58 verts,	68 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 58 congested vertices.
+ % @D deleting 6 slack rows
+ % @PAP adding 3 rows, 257 nz to LP
+ % @PMEM 1483 rows, 5 blocks, 2403 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 385 rows, 574 cols, 9780 nonzeros, 3 slack, 382 tight.
+  % Node 0 LP 107 Solution, length = 103260316956788368.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 55 fractional variables
+ % @LO 0.46 10326.03169153821545478422 0.0790654372
+ % @LN 0.46 10326.03169567883742274716 0.0790653971
+ % initially 76 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	58 verts,	68 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 58 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 3 rows, 265 nz to LP
+ % @PMEM 1486 rows, 5 blocks, 2135 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 385 rows, 574 cols, 9784 nonzeros, 2 slack, 383 tight.
+  % Node 0 LP 108 Solution, length = 103260401460265264.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 53 fractional variables
+ % @LO 0.46 10326.03169567883742274716 0.0790653971
+ % @LN 0.46 10326.04014602652569010388 0.0789836264
+ % initially 76 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	57 verts,	65 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 57 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 3 rows, 273 nz to LP
+ % @PMEM 1489 rows, 5 blocks, 1859 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 386 rows, 574 cols, 9913 nonzeros, 3 slack, 383 tight.
+  % Node 0 LP 109 Solution, length = 103260401501671488.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 3
+ % 53 fractional variables
+ % @LO 0.47 10326.04014602652569010388 0.0789836264
+ % @LN 0.47 10326.04015016714947705623 0.0789835864
+ % initially 77 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	57 verts,	65 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 57 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 3 rows, 281 nz to LP
+ % @PMEM 1492 rows, 5 blocks, 1575 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 386 rows, 574 cols, 9927 nonzeros, 3 slack, 383 tight.
+  % Node 0 LP 110 Solution, length = 103260403420812736.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 53 fractional variables
+ % @LO 0.47 10326.04015016714947705623 0.0789835864
+ % @LN 0.47 10326.04034208127450256143 0.0789817293
+ % initially 76 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	57 verts,	65 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 57 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 3 rows, 275 nz to LP
+ % @PMEM 1495 rows, 5 blocks, 1297 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 386 rows, 574 cols, 10001 nonzeros, 3 slack, 383 tight.
+  % Node 0 LP 111 Solution, length = 103260403462218960.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 53 fractional variables
+ % @LO 0.47 10326.04034208127450256143 0.0789817293
+ % @LN 0.47 10326.04034622189647052437 0.0789816892
+ % initially 77 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	57 verts,	65 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 57 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 3 rows, 283 nz to LP
+ % @PMEM 1498 rows, 5 blocks, 1011 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 386 rows, 574 cols, 10009 nonzeros, 4 slack, 382 tight.
+  % @PAP adding 1 rows, 42 nz to LP
+  % @PL 387 rows, 574 cols, 10051 nonzeros, 8 slack, 379 tight.
+  % Node 0 LP 112 Solution, length = 103261047503540592.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 67 fractional variables
+ % @LO 0.48 10326.04034622189647052437 0.0789816892
+ % @LN 0.48 10326.10475035405943344813 0.0783584759
+ % Fixed 2 vars to 0 and 1 vars to 1.
+ % initially 79 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	74 verts,	89 edges
+ % Enumerating 74 congested vertices.
+ % @D deleting 8 slack rows
+ % @PAP adding 6 rows, 613 nz to LP
+ % @PMEM 1504 rows, 5 blocks, 392 nzfree, 242 nzwasted, 64800 nztotal
+  % @PL 385 rows, 574 cols, 9964 nonzeros, 6 slack, 379 tight.
+  % Node 0 LP 113 Solution, length = 103261047544946816.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 6
+ % 67 fractional variables
+ % @LO 0.48 10326.10475035405943344813 0.0783584759
+ % @LN 0.48 10326.10475449468140141107 0.0783584358
+ % initially 80 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	74 verts,	89 edges
+ % Enumerating 74 congested vertices.
+ % @D deleting 6 slack rows
+ % Entering garbage_collect_pool
+ % @PMEM 1504 rows, 5 blocks, 392 nzfree, 242 nzwasted, 64800 nztotal
+ % @PAP adding 6 rows, 625 nz to LP
+ % @PMEM 1510 rows, 6 blocks, 12704 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 385 rows, 574 cols, 9999 nonzeros, 6 slack, 379 tight.
+  % @PAP adding 6 rows, 293 nz to LP
+  % @PL 391 rows, 574 cols, 10292 nonzeros, 11 slack, 380 tight.
+  % Node 0 LP 114 Solution, length = 103262395906376160.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 6
+ % 71 fractional variables
+ % @LO 0.49 10326.10475449468140141107 0.0783584358
+ % @LN 0.49 10326.23959063761685683858 0.0770536796
+ % Fixed 0 vars to 0 and 1 vars to 1.
+ % initially 81 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	78 verts,	92 edges
+ % Enumerating 78 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 4 rows, 574 nz to LP
+ % @PMEM 1514 rows, 6 blocks, 12126 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 384 rows, 574 cols, 10163 nonzeros, 4 slack, 380 tight.
+  % @PAP adding 2 rows, 26 nz to LP
+  % @PL 386 rows, 574 cols, 10189 nonzeros, 4 slack, 382 tight.
+  % Node 0 LP 115 Solution, length = 103262428135240816.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 4
+ % 71 fractional variables
+ % @LO 0.50 10326.23959063761685683858 0.0770536796
+ % @LN 0.50 10326.24281352408070233651 0.0770224930
+ % initially 82 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	78 verts,	92 edges
+ % Enumerating 78 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 6 rows, 738 nz to LP
+ % @PMEM 1520 rows, 6 blocks, 11382 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 388 rows, 574 cols, 10454 nonzeros, 11 slack, 377 tight.
+  % @PAP adding 19 rows, 985 nz to LP
+  % @PL 407 rows, 574 cols, 11439 nonzeros, 16 slack, 391 tight.
+  % Node 0 LP 116 Solution, length = 103263807607122320.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 6
+ % 52 fractional variables
+ % @LO 0.50 10326.24281352408070233651 0.0770224930
+ % @LN 0.50 10326.38076071223258622922 0.0756876325
+ % Fixed 3 vars to 0 and 1 vars to 1.
+ % initially 78 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	61 verts,	68 edges
+ % Enumerating 61 congested vertices.
+ % @D deleting 16 slack rows
+ % @PAP adding 3 rows, 281 nz to LP
+ % @PMEM 1523 rows, 6 blocks, 11098 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 394 rows, 574 cols, 10721 nonzeros, 6 slack, 388 tight.
+  % Node 0 LP 117 Solution, length = 103263989246789824.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 56 fractional variables
+ % @LO 0.50 10326.38076071223258622922 0.0756876325
+ % @LN 0.50 10326.39892467898243921809 0.0755118670
+ % initially 80 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	63 verts,	71 edges
+ % Enumerating 63 congested vertices.
+ % @D deleting 6 slack rows
+ % @PAP adding 4 rows, 373 nz to LP
+ % @PMEM 1527 rows, 6 blocks, 10721 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 392 rows, 574 cols, 10334 nonzeros, 17 slack, 375 tight.
+  % @PAP adding 9 rows, 419 nz to LP
+  % @PL 401 rows, 574 cols, 10753 nonzeros, 22 slack, 379 tight.
+  % @PAP adding 1 rows, 34 nz to LP
+  % @PL 402 rows, 574 cols, 10787 nonzeros, 22 slack, 380 tight.
+  % Node 0 LP 118 Solution, length = 103265423684462208.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 4
+ % 86 fractional variables
+ % @LO 0.51 10326.39892467898243921809 0.0755118670
+ % @LN 0.51 10326.54236844622028002050 0.0741238182
+ % initially 88 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	82 verts,	101 edges
+ % Enumerating 82 congested vertices.
+ % @D deleting 22 slack rows
+ % @PAP adding 14 rows, 1478 nz to LP
+ % @PMEM 1541 rows, 6 blocks, 9229 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 394 rows, 574 cols, 10730 nonzeros, 10 slack, 384 tight.
+  % Node 0 LP 119 Solution, length = 103267781974210400.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 14
+ % 60 fractional variables
+ % @LO 0.52 10326.54236844622028002050 0.0741238182
+ % @LN 0.52 10326.77819742103929456789 0.0718417943
+ % Fixed 1 vars to 0 and 0 vars to 1.
+ % initially 82 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	78 verts,	86 edges
+ % Enumerating 78 congested vertices.
+ % @D deleting 10 slack rows
+ % @PAP adding 6 rows, 757 nz to LP
+ % @PMEM 1547 rows, 6 blocks, 8466 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 390 rows, 574 cols, 10749 nonzeros, 4 slack, 386 tight.
+  % Node 0 LP 120 Solution, length = 103267782015616608.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 6
+ % 60 fractional variables
+ % @LO 0.52 10326.77819742103929456789 0.0718417943
+ % @LN 0.52 10326.77820156166126253083 0.0718417542
+ % initially 83 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	78 verts,	86 edges
+ % Enumerating 78 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 6 rows, 769 nz to LP
+ % @PMEM 1553 rows, 6 blocks, 7691 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 392 rows, 574 cols, 11040 nonzeros, 24 slack, 368 tight.
+  % @PAP adding 16 rows, 967 nz to LP
+  % @PL 408 rows, 574 cols, 12007 nonzeros, 24 slack, 384 tight.
+  % Node 0 LP 121 Solution, length = 103280447277565008.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 6
+ % 39 fractional variables
+ % @LO 0.53 10326.77820156166126253083 0.0718417542
+ % @LN 0.53 10328.04472775649992399849 0.0595860799
+ % Fixed 2 vars to 0 and 4 vars to 1.
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	46 verts,	51 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 46 congested vertices.
+ % @D deleting 24 slack rows
+ % @PAP adding 3 rows, 229 nz to LP
+ % @PMEM 1556 rows, 6 blocks, 7459 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 387 rows, 574 cols, 10041 nonzeros, 4 slack, 383 tight.
+  % Node 0 LP 122 Solution, length = 103280447318971232.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 39 fractional variables
+ % @LO 0.53 10328.04472775649992399849 0.0595860799
+ % @LN 0.53 10328.04473189712371095084 0.0595860399
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 2 components:
+ % 	component 0:	46 verts,	51 edges
+ % 	component 1:	8 verts,	8 edges
+ % Enumerating 46 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 3 rows, 235 nz to LP
+ % @PMEM 1559 rows, 6 blocks, 7221 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 386 rows, 574 cols, 9821 nonzeros, 20 slack, 366 tight.
+  % @PAP adding 26 rows, 2643 nz to LP
+  % @PL 412 rows, 574 cols, 12464 nonzeros, 8 slack, 404 tight.
+  % Node 0 LP 123 Solution, length = 103285975370840672.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 14 fractional variables
+ % @LO 0.54 10328.04473189712371095084 0.0595860399
+ % @LN 0.54 10328.59753708406788064167 0.0542367622
+ % Fixed 2 vars to 0 and 1 vars to 1.
+ % initially 72 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 8 slack rows
+ % @PAP adding 15 rows, 746 nz to LP
+ % @PMEM 1574 rows, 6 blocks, 6460 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 419 rows, 574 cols, 12533 nonzeros, 18 slack, 401 tight.
+  % Node 0 LP 124 Solution, length = 103285975412246896.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 15
+ % 14 fractional variables
+ % @LO 0.54 10328.59753708406788064167 0.0542367622
+ % @LN 0.54 10328.59754122468984860461 0.0542367221
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 18 slack rows
+ % @PAP adding 15 rows, 790 nz to LP
+ % @PMEM 1589 rows, 6 blocks, 5655 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 416 rows, 574 cols, 11841 nonzeros, 12 slack, 404 tight.
+  % Node 0 LP 125 Solution, length = 103285976556596992.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 15
+ % 14 fractional variables
+ % @LO 0.54 10328.59754122468984860461 0.0542367221
+ % @LN 0.54 10328.59765565969973977190 0.0542356148
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 12 slack rows
+ % @PAP adding 15 rows, 791 nz to LP
+ % @PMEM 1604 rows, 6 blocks, 4849 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 419 rows, 574 cols, 11978 nonzeros, 15 slack, 404 tight.
+  % Node 0 LP 126 Solution, length = 103285976598003216.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 15
+ % 14 fractional variables
+ % @LO 0.54 10328.59765565969973977190 0.0542356148
+ % @LN 0.54 10328.59765980032170773484 0.0542355747
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 15 slack rows
+ % @PAP adding 15 rows, 835 nz to LP
+ % @PMEM 1619 rows, 6 blocks, 3999 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 419 rows, 574 cols, 12034 nonzeros, 17 slack, 402 tight.
+  % Node 0 LP 127 Solution, length = 103286145226635296.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 15
+ % 14 fractional variables
+ % @LO 0.55 10328.59765980032170773484 0.0542355747
+ % @LN 0.55 10328.61452266352898732293 0.0540723994
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 17 slack rows
+ % @PAP adding 3 rows, 310 nz to LP
+ % @PMEM 1622 rows, 6 blocks, 3686 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 405 rows, 574 cols, 11036 nonzeros, 5 slack, 400 tight.
+  % Node 0 LP 128 Solution, length = 103286145268041520.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 14 fractional variables
+ % @LO 0.55 10328.61452266352898732293 0.0540723994
+ % @LN 0.55 10328.61452680415277427528 0.0540723594
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 5 slack rows
+ % @PAP adding 3 rows, 317 nz to LP
+ % @PMEM 1625 rows, 6 blocks, 3366 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 403 rows, 574 cols, 11032 nonzeros, 5 slack, 398 tight.
+  % Node 0 LP 129 Solution, length = 103286146412391616.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 14 fractional variables
+ % @LO 0.55 10328.61452680415277427528 0.0540723594
+ % @LN 0.55 10328.61464123916084645316 0.0540712520
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 5 slack rows
+ % @PAP adding 3 rows, 319 nz to LP
+ % @PMEM 1628 rows, 6 blocks, 3044 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 401 rows, 574 cols, 11028 nonzeros, 3 slack, 398 tight.
+  % Node 0 LP 130 Solution, length = 103286146453797840.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 14 fractional variables
+ % @LO 0.56 10328.61464123916084645316 0.0540712520
+ % @LN 0.56 10328.61464537978463340551 0.0540712120
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 3 rows, 326 nz to LP
+ % @PMEM 1631 rows, 6 blocks, 2715 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 401 rows, 574 cols, 11041 nonzeros, 4 slack, 397 tight.
+  % Node 0 LP 131 Solution, length = 103286184139403664.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 14 fractional variables
+ % @LO 0.56 10328.61464537978463340551 0.0540712120
+ % @LN 0.56 10328.61841394036673591472 0.0540347451
+ % initially 73 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 15 rows, 769 nz to LP
+ % @PMEM 1646 rows, 6 blocks, 1931 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 412 rows, 574 cols, 11268 nonzeros, 11 slack, 401 tight.
+  % Node 0 LP 132 Solution, length = 103286184180809888.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 15
+ % 14 fractional variables
+ % @LO 0.56 10328.61841394036673591472 0.0540347451
+ % @LN 0.56 10328.61841808098870387767 0.0540347050
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 15 rows, 813 nz to LP
+ % @PMEM 1661 rows, 6 blocks, 1103 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 416 rows, 574 cols, 11576 nonzeros, 11 slack, 405 tight.
+  % Node 0 LP 133 Solution, length = 103286185325159984.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 15
+ % 14 fractional variables
+ % @LO 0.56 10328.61841808098870387767 0.0540347050
+ % @LN 0.56 10328.61853251599859504495 0.0540335977
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 15 rows, 814 nz to LP
+ % @PMEM 1676 rows, 6 blocks, 274 nzfree, 259 nzwasted, 77760 nztotal
+  % @PL 420 rows, 574 cols, 11855 nonzeros, 15 slack, 405 tight.
+  % Node 0 LP 134 Solution, length = 103286185366566208.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 15
+ % 14 fractional variables
+ % @LO 0.57 10328.61853251599859504495 0.0540335977
+ % @LN 0.57 10328.61853665662056300789 0.0540335576
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 15 slack rows
+ % Entering garbage_collect_pool
+ % @PMEM 1676 rows, 6 blocks, 274 nzfree, 259 nzwasted, 77760 nztotal
+ % @PAP adding 15 rows, 858 nz to LP
+ % @PMEM 1691 rows, 7 blocks, 12335 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 420 rows, 574 cols, 11914 nonzeros, 17 slack, 403 tight.
+  % Node 0 LP 135 Solution, length = 103286353995198288.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 15
+ % 14 fractional variables
+ % @LO 0.57 10328.61853665662056300789 0.0540335576
+ % @LN 0.57 10328.63539951982966158539 0.0538703823
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 17 slack rows
+ % @PAP adding 15 rows, 825 nz to LP
+ % @PMEM 1706 rows, 7 blocks, 11495 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 418 rows, 574 cols, 11634 nonzeros, 14 slack, 404 tight.
+  % Node 0 LP 136 Solution, length = 103286354036604512.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 15
+ % 14 fractional variables
+ % @LO 0.57 10328.63539951982966158539 0.0538703823
+ % @LN 0.57 10328.63540366045162954833 0.0538703423
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 14 slack rows
+ % @PAP adding 15 rows, 869 nz to LP
+ % @PMEM 1721 rows, 7 blocks, 10611 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 419 rows, 574 cols, 11811 nonzeros, 14 slack, 405 tight.
+  % Node 0 LP 137 Solution, length = 103286355180954624.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 15
+ % 14 fractional variables
+ % @LO 0.58 10328.63540366045162954833 0.0538703423
+ % @LN 0.58 10328.63551809546152071562 0.0538692349
+ % initially 75 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 14 slack rows
+ % @PAP adding 15 rows, 870 nz to LP
+ % @PMEM 1736 rows, 7 blocks, 9726 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 420 rows, 574 cols, 11959 nonzeros, 15 slack, 405 tight.
+  % Node 0 LP 138 Solution, length = 103286355222360832.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 15
+ % 14 fractional variables
+ % @LO 0.58 10328.63551809546152071562 0.0538692349
+ % @LN 0.58 10328.63552223608348867856 0.0538691949
+ % initially 76 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 15 slack rows
+ % @PAP adding 15 rows, 914 nz to LP
+ % @PMEM 1751 rows, 7 blocks, 8797 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 420 rows, 574 cols, 12018 nonzeros, 28 slack, 392 tight.
+  % @PAP adding 1 rows, 2 nz to LP
+  % @PL 421 rows, 574 cols, 12020 nonzeros, 29 slack, 392 tight.
+  % Node 0 LP 139 Solution, length = 103286591575883840.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 15
+ % 55 fractional variables
+ % @LO 0.58 10328.63552223608348867856 0.0538691949
+ % @LN 0.58 10328.65915758838309557177 0.0536404849
+ % initially 82 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	65 verts,	75 edges
+ % Enumerating 65 congested vertices.
+ % @D deleting 29 slack rows
+ % @PAP adding 9 rows, 879 nz to LP
+ % @PMEM 1760 rows, 7 blocks, 7909 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 401 rows, 574 cols, 10606 nonzeros, 11 slack, 390 tight.
+  % Node 0 LP 140 Solution, length = 103286592761640160.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 9
+ % 55 fractional variables
+ % @LO 0.58 10328.65915758838309557177 0.0536404849
+ % @LN 0.58 10328.65927616401677369140 0.0536393375
+ % initially 83 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	65 verts,	75 edges
+ % Enumerating 65 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 9 rows, 906 nz to LP
+ % @PMEM 1769 rows, 7 blocks, 6994 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 399 rows, 574 cols, 10676 nonzeros, 16 slack, 383 tight.
+  % @PAP adding 3 rows, 200 nz to LP
+  % @PL 402 rows, 574 cols, 10876 nonzeros, 19 slack, 383 tight.
+  % Node 0 LP 141 Solution, length = 103286757457021760.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 9
+ % 63 fractional variables
+ % @LO 0.59 10328.65927616401677369140 0.0536393375
+ % @LN 0.59 10328.67574570217584550846 0.0534799682
+ % initially 84 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	68 verts,	80 edges
+ % Enumerating 68 congested vertices.
+ % @D deleting 19 slack rows
+ % @PAP adding 6 rows, 748 nz to LP
+ % @PMEM 1775 rows, 7 blocks, 6240 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 389 rows, 574 cols, 10345 nonzeros, 7 slack, 382 tight.
+  % Node 0 LP 142 Solution, length = 103286776899603872.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 6
+ % 65 fractional variables
+ % @LO 0.60 10328.67574570217584550846 0.0534799682
+ % @LN 0.60 10328.67768996038648765534 0.0534611544
+ % initially 85 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	72 verts,	85 edges
+ % Enumerating 72 congested vertices.
+ % @D deleting 7 slack rows
+ % @PAP adding 7 rows, 898 nz to LP
+ % @PMEM 1782 rows, 7 blocks, 5335 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 389 rows, 574 cols, 10526 nonzeros, 6 slack, 383 tight.
+  % Node 0 LP 143 Solution, length = 103286776941010096.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 7
+ % 65 fractional variables
+ % @LO 0.60 10328.67768996038648765534 0.0534611544
+ % @LN 0.60 10328.67769410101027460769 0.0534611144
+ % initially 86 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	72 verts,	85 edges
+ % Enumerating 72 congested vertices.
+ % @D deleting 6 slack rows
+ % @PAP adding 7 rows, 912 nz to LP
+ % @PMEM 1789 rows, 7 blocks, 4416 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 390 rows, 574 cols, 10695 nonzeros, 8 slack, 382 tight.
+  % @PAP adding 2 rows, 190 nz to LP
+  % @PL 392 rows, 574 cols, 10885 nonzeros, 11 slack, 381 tight.
+  % Node 0 LP 144 Solution, length = 103287740907907120.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 7
+ % 59 fractional variables
+ % @LO 0.61 10328.67769410101027460769 0.0534611144
+ % @LN 0.61 10328.77409079071185260545 0.0525283216
+ % initially 84 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	66 verts,	77 edges
+ % Enumerating 66 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 8 rows, 790 nz to LP
+ % @PMEM 1797 rows, 7 blocks, 3618 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 389 rows, 574 cols, 10258 nonzeros, 6 slack, 383 tight.
+  % Node 0 LP 145 Solution, length = 103287742093663440.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 8
+ % 59 fractional variables
+ % @LO 0.61 10328.77409079071185260545 0.0525283216
+ % @LN 0.61 10328.77420936634371173568 0.0525271742
+ % initially 85 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	66 verts,	77 edges
+ % Enumerating 66 congested vertices.
+ % @D deleting 6 slack rows
+ % @PAP adding 8 rows, 814 nz to LP
+ % @PMEM 1805 rows, 7 blocks, 2796 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 391 rows, 574 cols, 10587 nonzeros, 5 slack, 386 tight.
+  % @PAP adding 3 rows, 200 nz to LP
+  % @PL 394 rows, 574 cols, 10787 nonzeros, 9 slack, 385 tight.
+  % Node 0 LP 146 Solution, length = 103287803837071968.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 8
+ % 62 fractional variables
+ % @LO 0.62 10328.77420936634371173568 0.0525271742
+ % @LN 0.62 10328.78038370719696104061 0.0524674276
+ % initially 86 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	69 verts,	81 edges
+ % Enumerating 69 congested vertices.
+ % @D deleting 9 slack rows
+ % @PAP adding 4 rows, 554 nz to LP
+ % @PMEM 1809 rows, 7 blocks, 2238 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 389 rows, 574 cols, 10474 nonzeros, 10 slack, 379 tight.
+  % @PAP adding 8 rows, 627 nz to LP
+  % @PL 397 rows, 574 cols, 11101 nonzeros, 11 slack, 386 tight.
+  % Node 0 LP 147 Solution, length = 103287997163997840.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 4
+ % 59 fractional variables
+ % @LO 0.62 10328.78038370719696104061 0.0524674276
+ % @LN 0.62 10328.79971639978430175688 0.0522803527
+ % initially 85 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	68 verts,	79 edges
+ % Enumerating 68 congested vertices.
+ % @D deleting 11 slack rows
+ % @PAP adding 7 rows, 741 nz to LP
+ % @PMEM 1816 rows, 7 blocks, 1490 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 393 rows, 574 cols, 10729 nonzeros, 3 slack, 390 tight.
+  % Node 0 LP 148 Solution, length = 103287997205404064.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 7
+ % 59 fractional variables
+ % @LO 0.62 10328.79971639978430175688 0.0522803527
+ % @LN 0.62 10328.79972054040626971982 0.0522803127
+ % initially 86 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	68 verts,	79 edges
+ % Enumerating 68 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 7 rows, 758 nz to LP
+ % @PMEM 1823 rows, 7 blocks, 725 nzfree, 285 nzwasted, 90720 nztotal
+  % @PL 397 rows, 574 cols, 11281 nonzeros, 15 slack, 382 tight.
+  % @PAP adding 1 rows, 122 nz to LP
+  % @PL 398 rows, 574 cols, 11403 nonzeros, 16 slack, 382 tight.
+  % Node 0 LP 149 Solution, length = 103288332341746656.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 7
+ % 57 fractional variables
+ % @LO 0.63 10328.79972054040626971982 0.0522803127
+ % @LN 0.63 10328.83323417466635874007 0.0519560144
+ % initially 86 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	76 verts,	85 edges
+ % Enumerating 76 congested vertices.
+ % @D deleting 16 slack rows
+ % Entering garbage_collect_pool
+ % @PMEM 1823 rows, 7 blocks, 725 nzfree, 285 nzwasted, 90720 nztotal
+ % @PAP adding 11 rows, 1183 nz to LP
+ % @PMEM 1834 rows, 8 blocks, 12471 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 393 rows, 574 cols, 10855 nonzeros, 9 slack, 384 tight.
+  % Node 0 LP 150 Solution, length = 103288365470382512.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 11
+ % 74 fractional variables
+ % @LO 0.64 10328.83323417466635874007 0.0519560144
+ % @LN 0.64 10328.83654703825050091837 0.0519239572
+ % initially 88 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	76 verts,	91 edges
+ % Enumerating 76 congested vertices.
+ % @D deleting 9 slack rows
+ % @PAP adding 6 rows, 786 nz to LP
+ % @PMEM 1840 rows, 8 blocks, 11679 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 390 rows, 574 cols, 10703 nonzeros, 5 slack, 385 tight.
+  % Node 0 LP 151 Solution, length = 103288946907490816.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 6
+ % 14 fractional variables
+ % @LO 0.64 10328.83654703825050091837 0.0519239572
+ % @LN 0.64 10328.89469074908083712216 0.0513613234
+ % Fixed 1 vars to 0 and 0 vars to 1.
+ % initially 74 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	26 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 5 slack rows
+ % @PAP adding 3 rows, 291 nz to LP
+ % @PMEM 1843 rows, 8 blocks, 11385 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 388 rows, 574 cols, 10275 nonzeros, 6 slack, 382 tight.
+  % @PAP adding 2 rows, 255 nz to LP
+  % @PL 390 rows, 574 cols, 10530 nonzeros, 6 slack, 384 tight.
+  % Node 0 LP 152 Solution, length = 103289497257073088.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 71 fractional variables
+ % @LO 0.64 10328.89469074908083712216 0.0513613234
+ % @LN 0.64 10328.94972570730897132307 0.0508287718
+ % initially 87 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	80 verts,	96 edges
+ % Enumerating 80 congested vertices.
+ % @D deleting 6 slack rows
+ % @PAP adding 12 rows, 1270 nz to LP
+ % @PMEM 1855 rows, 8 blocks, 10103 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 396 rows, 574 cols, 11023 nonzeros, 14 slack, 382 tight.
+  % @PAP adding 6 rows, 425 nz to LP
+  % @PL 402 rows, 574 cols, 11448 nonzeros, 18 slack, 384 tight.
+  % Node 0 LP 153 Solution, length = 103291380566506720.000000, 0.00/0.00/0.00/0.01/0.00/0.00/0.00 12
+ % 50 fractional variables
+ % @LO 0.65 10328.94972570730897132307 0.0508287718
+ % @LN 0.65 10329.13805665067229710985 0.0490063676
+ % Fixed 0 vars to 0 and 6 vars to 1.
+ % initially 83 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	68 verts,	74 edges
+ % Enumerating 68 congested vertices.
+ % @D deleting 18 slack rows
+ % @PAP adding 2 rows, 276 nz to LP
+ % @PMEM 1857 rows, 8 blocks, 9825 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 386 rows, 574 cols, 10096 nonzeros, 5 slack, 381 tight.
+  % Node 0 LP 154 Solution, length = 103291380607912944.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 2
+ % 50 fractional variables
+ % @LO 0.66 10329.13805665067229710985 0.0490063676
+ % @LN 0.66 10329.13806079129426507279 0.0490063275
+ % initially 84 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	68 verts,	74 edges
+ % Enumerating 68 congested vertices.
+ % @D deleting 5 slack rows
+ % @PAP adding 2 rows, 280 nz to LP
+ % @PMEM 1859 rows, 8 blocks, 9543 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 383 rows, 574 cols, 9934 nonzeros, 1 slack, 382 tight.
+  % Node 0 LP 155 Solution, length = 103291383892980912.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 50 fractional variables
+ % @LO 0.66 10329.13806079129426507279 0.0490063275
+ % @LN 0.66 10329.13838929809207911603 0.0490031487
+ % initially 84 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	69 verts,	75 edges
+ % Enumerating 69 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 2 rows, 283 nz to LP
+ % @PMEM 1861 rows, 8 blocks, 9258 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 384 rows, 574 cols, 10082 nonzeros, 2 slack, 382 tight.
+  % Node 0 LP 156 Solution, length = 103291395730559520.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 57 fractional variables
+ % @LO 0.66 10329.13838929809207911603 0.0490031487
+ % @LN 0.66 10329.13957305595249636099 0.0489916939
+ % initially 86 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	74 verts,	82 edges
+ % Enumerating 74 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 289 nz to LP
+ % @PMEM 1863 rows, 8 blocks, 8967 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 384 rows, 574 cols, 10076 nonzeros, 6 slack, 378 tight.
+  % @PAP adding 3 rows, 357 nz to LP
+  % @PL 387 rows, 574 cols, 10433 nonzeros, 8 slack, 379 tight.
+  % Node 0 LP 157 Solution, length = 103291825941879456.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 65 fractional variables
+ % @LO 0.67 10329.13957305595249636099 0.0489916939
+ % @LN 0.67 10329.18259418794514203910 0.0485753954
+ % initially 87 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	77 verts,	89 edges
+ % Enumerating 77 congested vertices.
+ % @D deleting 8 slack rows
+ % @PAP adding 5 rows, 688 nz to LP
+ % @PMEM 1868 rows, 8 blocks, 8274 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 384 rows, 574 cols, 10275 nonzeros, 4 slack, 380 tight.
+  % Node 0 LP 158 Solution, length = 103291829681546304.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 5
+ % 65 fractional variables
+ % @LO 0.67 10329.18259418794514203910 0.0485753954
+ % @LN 0.67 10329.18296815462963422760 0.0485717767
+ % initially 88 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	78 verts,	90 edges
+ % Enumerating 78 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 5 rows, 605 nz to LP
+ % @PMEM 1873 rows, 8 blocks, 7664 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 385 rows, 574 cols, 10394 nonzeros, 13 slack, 372 tight.
+  % @PAP adding 22 rows, 1191 nz to LP
+  % @PL 407 rows, 574 cols, 11585 nonzeros, 24 slack, 383 tight.
+  % @PAP adding 7 rows, 434 nz to LP
+  % @PL 414 rows, 574 cols, 12019 nonzeros, 31 slack, 383 tight.
+  % @PAP adding 2 rows, 252 nz to LP
+  % @PL 416 rows, 574 cols, 12271 nonzeros, 32 slack, 384 tight.
+  % Node 0 LP 159 Solution, length = 103295518848797216.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 5
+ % 55 fractional variables
+ % @LO 0.68 10329.18296815462963422760 0.0485717767
+ % @LN 0.68 10329.55188487972191069275 0.0450019151
+ % Fixed 4 vars to 0 and 1 vars to 1.
+ % initially 83 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	70 verts,	79 edges
+ % Enumerating 70 congested vertices.
+ % @D deleting 32 slack rows
+ % @PAP adding 2 rows, 304 nz to LP
+ % @PMEM 1875 rows, 8 blocks, 7358 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 386 rows, 574 cols, 9980 nonzeros, 3 slack, 383 tight.
+  % Node 0 LP 160 Solution, length = 103295518890203440.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 55 fractional variables
+ % @LO 0.68 10329.55188487972191069275 0.0450019151
+ % @LN 0.68 10329.55188902034387865569 0.0450018750
+ % initially 84 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	70 verts,	79 edges
+ % Enumerating 70 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 2 rows, 308 nz to LP
+ % @PMEM 1877 rows, 8 blocks, 7048 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 385 rows, 574 cols, 9950 nonzeros, 1 slack, 384 tight.
+  % Node 0 LP 161 Solution, length = 103295865998563456.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 55 fractional variables
+ % @LO 0.69 10329.55188902034387865569 0.0450018750
+ % @LN 0.69 10329.58659985634585609660 0.0446659920
+ % initially 86 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	77 verts,	85 edges
+ % Enumerating 77 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 2 rows, 321 nz to LP
+ % @PMEM 1879 rows, 8 blocks, 6725 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 386 rows, 574 cols, 10118 nonzeros, 2 slack, 384 tight.
+  % Node 0 LP 162 Solution, length = 103295866039969664.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 55 fractional variables
+ % @LO 0.69 10329.58659985634585609660 0.0446659920
+ % @LN 0.69 10329.58660399696600507013 0.0446659519
+ % initially 87 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	77 verts,	85 edges
+ % Enumerating 77 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 325 nz to LP
+ % @PMEM 1881 rows, 8 blocks, 6398 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 386 rows, 574 cols, 10130 nonzeros, 2 slack, 384 tight.
+  % Node 0 LP 163 Solution, length = 103295893012610288.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 55 fractional variables
+ % @LO 0.70 10329.58660399696600507013 0.0446659519
+ % @LN 0.70 10329.58930126102859503590 0.0446398515
+ % initially 87 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	77 verts,	85 edges
+ % Enumerating 77 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 325 nz to LP
+ % @PMEM 1883 rows, 8 blocks, 6071 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 386 rows, 574 cols, 10171 nonzeros, 2 slack, 384 tight.
+  % Node 0 LP 164 Solution, length = 103295893054016496.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 55 fractional variables
+ % @LO 0.70 10329.58930126102859503590 0.0446398515
+ % @LN 0.70 10329.58930540164874400944 0.0446398115
+ % initially 88 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	77 verts,	85 edges
+ % Enumerating 77 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 329 nz to LP
+ % @PMEM 1885 rows, 8 blocks, 5740 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 386 rows, 574 cols, 10177 nonzeros, 1 slack, 385 tight.
+  % @PAP adding 2 rows, 242 nz to LP
+  % @PL 388 rows, 574 cols, 10419 nonzeros, 2 slack, 386 tight.
+  % Node 0 LP 165 Solution, length = 103296426049805424.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 55 fractional variables
+ % @LO 0.70 10329.58930540164874400944 0.0446398115
+ % @LN 0.70 10329.64260498054318304639 0.0441240525
+ % initially 84 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	70 verts,	79 edges
+ % Enumerating 70 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 311 nz to LP
+ % @PMEM 1887 rows, 8 blocks, 5427 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 388 rows, 574 cols, 10403 nonzeros, 3 slack, 385 tight.
+  % Node 0 LP 166 Solution, length = 103296426091211648.000000, 0.00/0.00/0.00/0.00/0.00/0.01/0.00 2
+ % 55 fractional variables
+ % @LO 0.71 10329.64260498054318304639 0.0441240525
+ % @LN 0.71 10329.64260912116515100934 0.0441240124
+ % initially 85 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	70 verts,	79 edges
+ % Enumerating 70 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 2 rows, 315 nz to LP
+ % @PMEM 1889 rows, 8 blocks, 5110 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 387 rows, 574 cols, 10280 nonzeros, 2 slack, 385 tight.
+  % Node 0 LP 167 Solution, length = 103296773199571664.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 55 fractional variables
+ % @LO 0.71 10329.64260912116515100934 0.0441240124
+ % @LN 0.71 10329.67731995716712845024 0.0437881294
+ % initially 87 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	77 verts,	85 edges
+ % Enumerating 77 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 3 rows, 455 nz to LP
+ % @PMEM 1892 rows, 8 blocks, 4652 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 388 rows, 574 cols, 10423 nonzeros, 2 slack, 386 tight.
+  % Node 0 LP 168 Solution, length = 103296786727298192.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 3
+ % 61 fractional variables
+ % @LO 0.72 10329.67731995716712845024 0.0437881294
+ % @LN 0.72 10329.67867272981857240666 0.0437750391
+ % initially 89 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	80 verts,	90 edges
+ % Enumerating 80 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 3 rows, 463 nz to LP
+ % @PMEM 1895 rows, 8 blocks, 4186 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 389 rows, 574 cols, 10608 nonzeros, 8 slack, 381 tight.
+  % @PAP adding 3 rows, 396 nz to LP
+  % @PL 392 rows, 574 cols, 11004 nonzeros, 9 slack, 383 tight.
+  % Node 0 LP 169 Solution, length = 103298441115023152.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 3
+ % 52 fractional variables
+ % @LO 0.72 10329.67867272981857240666 0.0437750391
+ % @LN 0.72 10329.84411150231608189642 0.0421741534
+ % Fixed 1 vars to 0 and 1 vars to 1.
+ % initially 83 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	68 verts,	76 edges
+ % Enumerating 68 congested vertices.
+ % @D deleting 9 slack rows
+ % @PAP adding 4 rows, 434 nz to LP
+ % @PMEM 1899 rows, 8 blocks, 3748 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 387 rows, 574 cols, 10099 nonzeros, 2 slack, 385 tight.
+  % Node 0 LP 170 Solution, length = 103298473047448704.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 4
+ % 52 fractional variables
+ % @LO 0.72 10329.84411150231608189642 0.0421741534
+ % @LN 0.72 10329.84730474486968887504 0.0421432536
+ % initially 84 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	68 verts,	76 edges
+ % Enumerating 68 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 295 nz to LP
+ % @PMEM 1901 rows, 8 blocks, 3451 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 387 rows, 574 cols, 10272 nonzeros, 10 slack, 377 tight.
+  % @PAP adding 7 rows, 555 nz to LP
+  % @PL 394 rows, 574 cols, 10827 nonzeros, 16 slack, 378 tight.
+  % Node 0 LP 171 Solution, length = 103298758431688928.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 72 fractional variables
+ % @LO 0.73 10329.84730474486968887504 0.0421432536
+ % @LN 0.73 10329.87584316889297042508 0.0418670986
+ % initially 87 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	80 verts,	95 edges
+ % Enumerating 80 congested vertices.
+ % @D deleting 16 slack rows
+ % @PAP adding 11 rows, 1012 nz to LP
+ % @PMEM 1912 rows, 8 blocks, 2428 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 389 rows, 574 cols, 10599 nonzeros, 9 slack, 380 tight.
+  % Node 0 LP 172 Solution, length = 103298758473095152.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 11
+ % 72 fractional variables
+ % @LO 0.73 10329.87584316889297042508 0.0418670986
+ % @LN 0.73 10329.87584730951493838802 0.0418670585
+ % initially 88 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	80 verts,	95 edges
+ % Enumerating 80 congested vertices.
+ % @D deleting 9 slack rows
+ % @PAP adding 11 rows, 1035 nz to LP
+ % @PMEM 1923 rows, 8 blocks, 1382 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 391 rows, 574 cols, 10875 nonzeros, 10 slack, 381 tight.
+  % @PAP adding 12 rows, 1075 nz to LP
+  % @PL 403 rows, 574 cols, 11950 nonzeros, 21 slack, 382 tight.
+  % @PAP adding 7 rows, 765 nz to LP
+  % @PL 410 rows, 574 cols, 12715 nonzeros, 22 slack, 388 tight.
+  % Node 0 LP 173 Solution, length = 103316092247604192.000000, 0.00/0.01/0.00/0.00/0.00/0.00/0.00 11
+ % 0 fractional variables
+ % @LO 0.74 10329.87584730951493838802 0.0418670585
+ % @LN 0.74 10331.60922476041923800949 0.0250938488
+ % Fixed 31 vars to 0 and 9 vars to 1.
+ % @cutset: 2 connected components.
+ % initially 14 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	3 verts,	3 edges
+ % @D deleting 22 slack rows
+ % @PAP adding 2 rows, 137 nz to LP
+ % @PMEM 1925 rows, 8 blocks, 1243 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 390 rows, 574 cols, 10759 nonzeros, 12 slack, 378 tight.
+  % @PAP adding 12 rows, 577 nz to LP
+  % @PL 402 rows, 574 cols, 11336 nonzeros, 11 slack, 391 tight.
+  % @PAP adding 5 rows, 252 nz to LP
+  % @PL 407 rows, 574 cols, 11588 nonzeros, 9 slack, 398 tight.
+  % @PAP adding 67 rows, 6042 nz to LP
+  % @PL 474 rows, 574 cols, 17630 nonzeros, 40 slack, 434 tight.
+  % Node 0 LP 174 Solution, length = 103336172996968880.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 7 fractional variables
+ % @LO 0.75 10331.60922476041923800949 0.0250938488
+ % @LN 0.75 10333.61729969688713026699 0.0056624999
+ % @UO 0.75 10334.20247390388976782560 0.0056624999
+ % @UN 0.75 10334.10509752222969837021 0.0047202716
+ % Fixed 82 vars to 0 and 17 vars to 1.
+ % initially 15 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	7 verts,	8 edges
+ % @D deleting 40 slack rows
+ % @PAP adding 1 rows, 27 nz to LP
+ % @PMEM 1926 rows, 8 blocks, 1215 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 435 rows, 574 cols, 14166 nonzeros, 20 slack, 415 tight.
+  % Node 0 LP 175 Solution, length = 103336173017672000.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 10 fractional variables
+ % @LO 0.75 10333.61729969688713026699 0.0047202716
+ % @LN 0.75 10333.61730176720084273256 0.0047202515
+ % initially 16 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	10 verts,	12 edges
+ % @D deleting 20 slack rows
+ % @PAP adding 1 rows, 30 nz to LP
+ % @PMEM 1927 rows, 8 blocks, 1184 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 416 rows, 574 cols, 12312 nonzeros, 1 slack, 415 tight.
+  % Node 0 LP 176 Solution, length = 103336371623949808.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 11 fractional variables
+ % @LO 0.76 10333.61730176720084273256 0.0047202515
+ % @LN 0.76 10333.63716239497989590745 0.0045280663
+ % Fixed 3 vars to 0 and 1 vars to 1.
+ % initially 16 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	10 verts,	12 edges
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 30 nz to LP
+ % @PMEM 1928 rows, 8 blocks, 1153 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 416 rows, 574 cols, 12219 nonzeros, 1 slack, 415 tight.
+  % Node 0 LP 177 Solution, length = 103336371644652928.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 14 fractional variables
+ % @LO 0.76 10333.63716239497989590745 0.0045280663
+ % @LN 0.76 10333.63716446529360837303 0.0045280462
+ % initially 17 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	13 verts,	16 edges
+ % Enumerating 13 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 33 nz to LP
+ % @PMEM 1929 rows, 8 blocks, 1119 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 416 rows, 574 cols, 12225 nonzeros, 3 slack, 413 tight.
+  % Node 0 LP 178 Solution, length = 103336701691340032.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 12 fractional variables
+ % @LO 0.76 10333.63716446529360837303 0.0045280462
+ % @LN 0.76 10333.67016913400402700063 0.0042086701
+ % Fixed 1 vars to 0 and 0 vars to 1.
+ % initially 17 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	12 verts,	14 edges
+ % Enumerating 12 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 1 rows, 31 nz to LP
+ % @PMEM 1930 rows, 8 blocks, 1087 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 414 rows, 574 cols, 12134 nonzeros, 1 slack, 413 tight.
+  % Node 0 LP 179 Solution, length = 103336900318320944.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 16 fractional variables
+ % @LO 0.77 10333.67016913400402700063 0.0042086701
+ % @LN 0.77 10333.69003183209497365169 0.0040164648
+ % Fixed 7 vars to 0 and 2 vars to 1.
+ % initially 18 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	14 verts,	17 edges
+ % Enumerating 14 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 34 nz to LP
+ % @PMEM 1931 rows, 8 blocks, 1052 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 414 rows, 574 cols, 12138 nonzeros, 1 slack, 413 tight.
+  % Node 0 LP 180 Solution, length = 103338243188103488.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 11 fractional variables
+ % @LO 0.77 10333.69003183209497365169 0.0040164648
+ % @LN 0.77 10333.82431881034790421836 0.0027170104
+ % Fixed 8 vars to 0 and 4 vars to 1.
+ % initially 20 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	13 verts,	14 edges
+ % Enumerating 13 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 37 nz to LP
+ % @PMEM 1932 rows, 8 blocks, 1014 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 414 rows, 574 cols, 12172 nonzeros, 0 slack, 414 tight.
+  % Node 0 LP 181 Solution, length = 103338243208806608.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 14 fractional variables
+ % @LO 0.78 10333.82431881034790421836 0.0027170104
+ % @LN 0.78 10333.82432088066161668394 0.0027169904
+ % initially 21 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	16 verts,	18 edges
+ % Enumerating 16 congested vertices.
+ % @PAP adding 1 rows, 40 nz to LP
+ % @PMEM 1933 rows, 8 blocks, 973 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 415 rows, 574 cols, 12212 nonzeros, 3 slack, 412 tight.
+  % Node 0 LP 182 Solution, length = 103338354127165120.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 11 fractional variables
+ % @LO 0.78 10333.82432088066161668394 0.0027169904
+ % @LN 0.78 10333.83541271651120041497 0.0026096581
+ % Fixed 1 vars to 0 and 1 vars to 1.
+ % initially 28 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	17 verts,	18 edges
+ % Enumerating 17 congested vertices.
+ % @D deleting 3 slack rows
+ % @PAP adding 1 rows, 51 nz to LP
+ % @PMEM 1934 rows, 8 blocks, 921 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 413 rows, 574 cols, 12062 nonzeros, 1 slack, 412 tight.
+  % Node 0 LP 183 Solution, length = 103338354147868240.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 14 fractional variables
+ % @LO 0.78 10333.83541271651120041497 0.0026096581
+ % @LN 0.78 10333.83541478682309389114 0.0026096380
+ % initially 29 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	18 verts,	20 edges
+ % Enumerating 18 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 53 nz to LP
+ % @PMEM 1935 rows, 8 blocks, 867 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 413 rows, 574 cols, 12078 nonzeros, 1 slack, 412 tight.
+  % Node 0 LP 184 Solution, length = 103338441815084416.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 1
+ % 15 fractional variables
+ % @LO 0.79 10333.83541478682309389114 0.0026096380
+ % @LN 0.79 10333.84418150844248884823 0.0025248051
+ % Fixed 1 vars to 0 and 0 vars to 1.
+ % initially 21 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	16 verts,	18 edges
+ % Enumerating 16 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 40 nz to LP
+ % @PMEM 1936 rows, 8 blocks, 826 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 413 rows, 574 cols, 12087 nonzeros, 1 slack, 412 tight.
+  % Node 0 LP 185 Solution, length = 103338441835787536.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 18 fractional variables
+ % @LO 0.79 10333.84418150844248884823 0.0025248051
+ % @LN 0.79 10333.84418357875438232441 0.0025247851
+ % initially 22 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	19 verts,	22 edges
+ % Enumerating 19 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 43 nz to LP
+ % @PMEM 1937 rows, 8 blocks, 782 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 413 rows, 574 cols, 12079 nonzeros, 4 slack, 409 tight.
+  % Node 0 LP 186 Solution, length = 103338450797529104.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 1
+ % 15 fractional variables
+ % @LO 0.80 10333.84418357875438232441 0.0025247851
+ % @LN 0.80 10333.84507975291126058437 0.0025161131
+ % initially 29 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	21 verts,	23 edges
+ % Enumerating 21 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 1 rows, 53 nz to LP
+ % @PMEM 1938 rows, 8 blocks, 728 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 410 rows, 574 cols, 11635 nonzeros, 1 slack, 409 tight.
+  % Node 0 LP 187 Solution, length = 103338450818232224.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 18 fractional variables
+ % @LO 0.80 10333.84507975291126058437 0.0025161131
+ % @LN 0.80 10333.84508182322315406054 0.0025160930
+ % initially 30 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	22 verts,	25 edges
+ % Enumerating 22 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 55 nz to LP
+ % @PMEM 1939 rows, 8 blocks, 672 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 410 rows, 574 cols, 11650 nonzeros, 4 slack, 406 tight.
+  % Node 0 LP 188 Solution, length = 103338473230839776.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 16 fractional variables
+ % @LO 0.80 10333.84508182322315406054 0.0025160930
+ % @LN 0.80 10333.84732308397724409588 0.0024944050
+ % initially 21 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	16 verts,	18 edges
+ % Enumerating 16 congested vertices.
+ % @D deleting 4 slack rows
+ % @PAP adding 1 rows, 38 nz to LP
+ % @PMEM 1940 rows, 8 blocks, 633 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 407 rows, 574 cols, 11616 nonzeros, 1 slack, 406 tight.
+  % Node 0 LP 189 Solution, length = 103338473251542896.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 1
+ % 19 fractional variables
+ % @LO 0.81 10333.84732308397724409588 0.0024944050
+ % @LN 0.81 10333.84732515428913757205 0.0024943850
+ % initially 22 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	19 verts,	22 edges
+ % Enumerating 19 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 41 nz to LP
+ % @PMEM 1941 rows, 8 blocks, 591 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 407 rows, 574 cols, 11604 nonzeros, 1 slack, 406 tight.
+  % Node 0 LP 190 Solution, length = 103338512992492912.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 24 fractional variables
+ % @LO 0.81 10333.84732515428913757205 0.0024943850
+ % @LN 0.81 10333.85129924929060507566 0.0024559289
+ % Fixed 2 vars to 0 and 0 vars to 1.
+ % initially 30 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	26 verts,	30 edges
+ % Enumerating 26 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 2 rows, 96 nz to LP
+ % @PMEM 1943 rows, 8 blocks, 493 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 408 rows, 574 cols, 11660 nonzeros, 2 slack, 406 tight.
+  % Node 0 LP 191 Solution, length = 103338513013196032.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 2
+ % 27 fractional variables
+ % @LO 0.82 10333.85129924929060507566 0.0024559289
+ % @LN 0.82 10333.85130131960249855183 0.0024559089
+ % initially 31 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	32 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 2 rows, 101 nz to LP
+ % @PMEM 1945 rows, 8 blocks, 390 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 408 rows, 574 cols, 11682 nonzeros, 2 slack, 406 tight.
+  % Node 0 LP 192 Solution, length = 103338649424510032.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 19 fractional variables
+ % @LO 0.82 10333.85130131960249855183 0.0024559089
+ % @LN 0.82 10333.86494245100402622484 0.0023239078
+ % Fixed 2 vars to 0 and 1 vars to 1.
+ % initially 30 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	23 verts,	26 edges
+ % Enumerating 23 congested vertices.
+ % @D deleting 2 slack rows
+ % @PAP adding 1 rows, 56 nz to LP
+ % @PMEM 1946 rows, 8 blocks, 333 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 407 rows, 574 cols, 11644 nonzeros, 1 slack, 406 tight.
+  % Node 0 LP 193 Solution, length = 103338649445213136.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 22 fractional variables
+ % @LO 0.82 10333.86494245100402622484 0.0023239078
+ % @LN 0.82 10333.86494452131410071161 0.0023238877
+ % initially 31 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	24 verts,	28 edges
+ % Enumerating 24 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 58 nz to LP
+ % @PMEM 1947 rows, 8 blocks, 274 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 407 rows, 574 cols, 11647 nonzeros, 1 slack, 406 tight.
+  % Node 0 LP 194 Solution, length = 103338680840265392.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 20 fractional variables
+ % @LO 0.82 10333.86494452131410071161 0.0023238877
+ % @LN 0.82 10333.86808402653878147248 0.0022935077
+ % initially 30 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	26 verts,	29 edges
+ % Enumerating 26 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 54 nz to LP
+ % @PMEM 1948 rows, 8 blocks, 219 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 407 rows, 574 cols, 11658 nonzeros, 1 slack, 406 tight.
+  % Node 0 LP 195 Solution, length = 103338680860968512.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 23 fractional variables
+ % @LO 0.82 10333.86808402653878147248 0.0022935077
+ % @LN 0.82 10333.86808609685067494866 0.0022934877
+ % initially 31 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	27 verts,	31 edges
+ % Enumerating 27 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 56 nz to LP
+ % @PMEM 1949 rows, 8 blocks, 162 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 407 rows, 574 cols, 11658 nonzeros, 1 slack, 406 tight.
+  % Node 0 LP 196 Solution, length = 103338879467246320.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 1
+ % 24 fractional variables
+ % @LO 0.83 10333.86808609685067494866 0.0022934877
+ % @LN 0.83 10333.88794672463154711295 0.0021013024
+ % Fixed 10 vars to 0 and 2 vars to 1.
+ % initially 31 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	28 verts,	32 edges
+ % Enumerating 28 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 57 nz to LP
+ % @PMEM 1950 rows, 8 blocks, 104 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 407 rows, 574 cols, 11660 nonzeros, 1 slack, 406 tight.
+  % Node 0 LP 197 Solution, length = 103338879487949424.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 27 fractional variables
+ % @LO 0.83 10333.88794672463154711295 0.0021013024
+ % @LN 0.83 10333.88794879494162159972 0.0021012824
+ % initially 32 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	29 verts,	34 edges
+ % Enumerating 29 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 59 nz to LP
+ % @PMEM 1951 rows, 8 blocks, 44 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 407 rows, 574 cols, 11665 nonzeros, 5 slack, 402 tight.
+  % Node 0 LP 198 Solution, length = 103338900326862880.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 9 fractional variables
+ % @LO 0.83 10333.88794879494162159972 0.0021012824
+ % @LN 0.83 10333.89003268628766818438 0.0020811172
+ % initially 18 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	9 verts,	10 edges
+ % @D deleting 5 slack rows
+ % @PAP adding 1 rows, 31 nz to LP
+ % @PMEM 1952 rows, 8 blocks, 12 nzfree, 305 nzwasted, 103680 nztotal
+  % @PL 403 rows, 574 cols, 11499 nonzeros, 1 slack, 402 tight.
+  % Node 0 LP 199 Solution, length = 103338900340664960.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 12 fractional variables
+ % @LO 0.83 10333.89003268628766818438 0.0020811172
+ % @LN 0.83 10333.89003406649680982810 0.0020811038
+ % initially 19 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	13 verts,	15 edges
+ % Enumerating 13 congested vertices.
+ % @D deleting 1 slack rows
+ % Entering garbage_collect_pool
+ % @PMEM 1952 rows, 8 blocks, 12 nzfree, 305 nzwasted, 103680 nztotal
+ % @PAP adding 1 rows, 34 nz to LP
+ % @PMEM 1953 rows, 9 blocks, 12925 nzfree, 317 nzwasted, 116640 nztotal
+  % @PL 403 rows, 574 cols, 11476 nonzeros, 1 slack, 402 tight.
+  % Node 0 LP 200 Solution, length = 103338900722114992.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 12 fractional variables
+ % @LO 0.84 10333.89003406649680982810 0.0020811038
+ % @LN 0.84 10333.89007221149950055405 0.0020807347
+ % initially 19 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	13 verts,	15 edges
+ % Enumerating 13 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 34 nz to LP
+ % @PMEM 1954 rows, 9 blocks, 12890 nzfree, 317 nzwasted, 116640 nztotal
+  % @PL 403 rows, 574 cols, 11393 nonzeros, 1 slack, 402 tight.
+  % Node 0 LP 201 Solution, length = 103338900735917072.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 15 fractional variables
+ % @LO 0.84 10333.89007221149950055405 0.0020807347
+ % @LN 0.84 10333.89007359170682320837 0.0020807213
+ % initially 20 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	16 verts,	19 edges
+ % Enumerating 16 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 37 nz to LP
+ % @PMEM 1955 rows, 9 blocks, 12852 nzfree, 317 nzwasted, 116640 nztotal
+  % @PL 403 rows, 574 cols, 11399 nonzeros, 1 slack, 402 tight.
+  % Node 0 LP 202 Solution, length = 103339033622304384.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 12 fractional variables
+ % @LO 0.84 10333.89007359170682320837 0.0020807213
+ % @LN 0.84 10333.90336223043777863495 0.0019521312
+ % Fixed 2 vars to 0 and 2 vars to 1.
+ % initially 19 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	10 verts,	12 edges
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 34 nz to LP
+ % @PMEM 1956 rows, 9 blocks, 12817 nzfree, 317 nzwasted, 116640 nztotal
+  % @PL 403 rows, 574 cols, 11355 nonzeros, 1 slack, 402 tight.
+  % Node 0 LP 203 Solution, length = 103339033636106464.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.01 1
+ % 15 fractional variables
+ % @LO 0.85 10333.90336223043777863495 0.0019521312
+ % @LN 0.85 10333.90336361064692027867 0.0019521179
+ % initially 20 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	14 verts,	17 edges
+ % Enumerating 14 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 37 nz to LP
+ % @PMEM 1957 rows, 9 blocks, 12779 nzfree, 317 nzwasted, 116640 nztotal
+  % @PL 403 rows, 574 cols, 11358 nonzeros, 1 slack, 402 tight.
+  % Node 0 LP 204 Solution, length = 103339034017556480.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 15 fractional variables
+ % @LO 0.85 10333.90336361064692027867 0.0019521179
+ % @LN 0.85 10333.90340175564779201522 0.0019517487
+ % initially 20 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	14 verts,	17 edges
+ % Enumerating 14 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 37 nz to LP
+ % @PMEM 1958 rows, 9 blocks, 12741 nzfree, 317 nzwasted, 116640 nztotal
+  % @PL 403 rows, 574 cols, 11361 nonzeros, 1 slack, 402 tight.
+  % Node 0 LP 205 Solution, length = 103339034031358560.000000, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 18 fractional variables
+ % @LO 0.85 10333.90340175564779201522 0.0019517487
+ % @LN 0.85 10333.90340313585511466954 0.0019517354
+ % initially 21 congested vertices:
+ % _gst_find_congested_components found 1 components:
+ % 	component 0:	17 verts,	21 edges
+ % Enumerating 17 congested vertices.
+ % @D deleting 1 slack rows
+ % @PAP adding 1 rows, 40 nz to LP
+ % @PMEM 1959 rows, 9 blocks, 12700 nzfree, 317 nzwasted, 116640 nztotal
+  % @PL 403 rows, 574 cols, 11367 nonzeros, 0 slack, 403 tight.
+  % Node 0 LP 206 Solution, length = 103339173435981184.000000, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 1
+ % 0 fractional variables
+ % @UO 0.86 10334.10509752222969837021 0.0019517354
+ % @UN 0.86 10333.91734359811925969552 0.0001349001
+ % *     0     0103339173435981184.0000103339173435981184.0000
+% @LO 0.86 10333.90340313585511466954 0.0001349001
+% @LN 0.86 10333.91734359811925969552 0.0000000000
+
+ % Certificate of solution:
+ % @C	.0008810014931937	-.0075922186049109
+ % @C	3.954515377736915	650.9967805634524
+ % @C	3.222275531230193	-.0411762304717078
+ % @C	2.163273564888871	-44.44660238662615
+ % @C	-37.00658288270472	711.0772388221594
+ % @C	-6.820068046877140	-764.2963157225931
+ % @C	-430.8786823864256	27.59668728380290
+ % @C	616.4476498477715	15.60130247253456
+ % @C	-.3142692592431984	-2.774103052478543
+ % @C	-564.9416268110913	-747.8624003146868
+ % @C	-133.7610966677625	3.070741998233068
+ % @C	-.5943458269387640	112.6155700719174
+ % @C	223.7424149445046	-5.325299619407214
+ % @C	.1566561491892656	-1.739280947434196
+ % @C	-60.74774188166755	-811.9116019370612
+ % @C	-50.69390911410785	-907.9272170241968
+ % @C	-93.92866490330400	-140.2337939884933
+ % @C	15.63078827450880	471.5905889008201
+ % @C	-3.704735371623062	214.4414024495598
+ % @C	1.606448902215878	32.99185223134025
+ % @C	.7447210809163406	41.26395263251794
+ % @C	-6.708797859207014	7.589958008946353
+ % @C	-6.587408601042197	2.167434996272831
+ % @C	177.1596873047427	.4146093191602718
+ % @C	24.70367114645047	-1.653728839276420
+ % @C	-1.091080420824979	26.79561804464217
+ % @C	407.7101097021362	4.375480115457390
+ % @C	.0183294494687890	.0251024321849265
+ % @C	.0000703987400421	-.0003809996159578
+ % @C	-4.249087413181962	59.83648543389133
+ % @C	-16.55127679645621	-1.708634358602293
+ % @C	8.616583713485043	.1578335594830843
+ % @C	6.615073565535909	92.09103672003107
+ % @C	-7.699856420194362	-170.1654773382403
+ % @C	-.3702805813736531	7.993381762749671
+ % @C	.5932911913969609	-.0855903505715687
+ % @C	30.19057991438437	2.395830626939091
+ % @C	3.350336656721284	-.1620102415026718
+ % @C	895.9562260680257	61.07339380038013
+ % @C	-3.642547692891571	-72.73294899238027
+ % @C	11.57622480657546	179.8881580287425
+ % @C	11.51428782060602	-1.903561687577978
+ % @C	-260.4451749954534	-6.281537317864265
+ % @C	65.73063121979155	-42.40963122980911
+ % @C	-117.3215416590628	86.44051689868773
+ % @C	-.9425388198834218	46.21536679596282
+ % @C	1.043690892443045	.1747694843749875
+ % @C	2.426163629861934	-83.56629977210467
+ % @C	249.1702353274715	13.32783824463000
+ % @C	-49.76485679195070	-2.177433807071818
+ % @C	386.8801759249419	1.908862216986903
+ % @C	530.6416979424882	475.4733563003769
+ % @C	-4.704250073442956	.1037095428496859
+ % @C	.1962636752541656	-.0113671218805921
+ % @C	-.0249066413758375	-.0416664291719531
+ % @C	861.7305602736661	-.8965664902161000
+ % @C	50.31942345328331	-4.318534917518087
+ % @C	.0860278336837093	6.216159011179429
+ % @C	-769.8662501810849	37.14415486889207
+ % @C	1.031251406924943	-148.5689643090895
+ % @C	-73.21857992492362	3.617425689281729
+ % @C	-.0587296563696937	-.3475102837797937
+ % @C	184.3040320067024	-7.940560596020231
+ % @C	.5100016663555531	12.12916449967827
+ % @C	1.214698696271320	10.48457673319878
+ % @C	-6.499519281030756	139.5734056885678
+ % @C	-31.97580209209284	147.1026866023101
+ % @C	-341.0372462068909	-87.92891170056110
+ % @C	-328.9468459362247	-11.56646067067262
+ % @C	361.0777676077928	-17.86657731342890
+ % @C	373.7820277564744	-156.1083245561862
+ % @C	-30.24014685103046	.9811459555496593
+ % @C	-29.30715039324027	2.331857253043843
+ % @C	-93.58510261581513	-9.071646917996831
+ % @C	-91.70040322379272	-22.77612663342178
+ % @C	-1.119981561100912	-6.753557861647312
+ % @C	-2.564390997654832	-6.686820724048153
+ % @C	-650.0720786309903	-65.41617967063867
+ % @C	-658.8140375848533	-20.10957923072250
+ % @C	-2.290708106056570	.2285591005235281
+ % @C	-2.866414774211384	.4551958940081406
+ % @C	-121.1294234545153	-1.614004289977134
+ % @C	-119.8968897475277	-.0770925896036421
+ % @C	8.296577271610618	-13.13283709874945
+ % @C	1.737868147534221	-13.19714806197440
+ % @C	81.33907917415440	-373.0896825038381
+ % @C	5.875754363367400	-383.7490976253209
+ % @C	-22.01127234172094	-348.1066558426060
+ % @C	55.76734574432307	1.072453944139200
+ % @C	69.63696336784537	4.303950817883878
+ % @C	80.79903806585083	-7.617668581192637
+%%Page: 1 1
+BeginPlot
+	Plot_Terminals
+ % fs4: 117 36 26
+	117 T	.0008810014931937	-.0075922186049109	S
+	.0008810014931937	-.0075922186049109	36 T	S
+	.0008810014931937	-.0075922186049109	26 T	S
+ % fs8: 242 16 38
+	242 T	3.954515377736915	650.9967805634524	S
+	3.954515377736915	650.9967805634524	16 T	S
+	3.954515377736915	650.9967805634524	38 T	S
+ % fs9: 115 44 30
+	115 T	3.222275531230193	-.0411762304717078	S
+	3.222275531230193	-.0411762304717078	44 T	S
+	3.222275531230193	-.0411762304717078	30 T	S
+ % fs10: 259 18 49
+	259 T	2.163273564888871	-44.44660238662615	S
+	2.163273564888871	-44.44660238662615	18 T	S
+	2.163273564888871	-44.44660238662615	49 T	S
+ % fs17: 245 38 57
+	245 T	-37.00658288270472	711.0772388221594	S
+	-37.00658288270472	711.0772388221594	38 T	S
+	-37.00658288270472	711.0772388221594	57 T	S
+ % fs19: 197 60 47
+	197 T	-6.820068046877140	-764.2963157225931	S
+	-6.820068046877140	-764.2963157225931	60 T	S
+	-6.820068046877140	-764.2963157225931	47 T	S
+ % fs25: 90 27 63
+	90 T	-430.8786823864256	27.59668728380290	S
+	-430.8786823864256	27.59668728380290	27 T	S
+	-430.8786823864256	27.59668728380290	63 T	S
+ % fs26: 225 64 7
+	225 T	616.4476498477715	15.60130247253456	S
+	616.4476498477715	15.60130247253456	64 T	S
+	616.4476498477715	15.60130247253456	7 T	S
+ % fs37: 165 79 12
+	165 T	-.3142692592431984	-2.774103052478543	S
+	-.3142692592431984	-2.774103052478543	79 T	S
+	-.3142692592431984	-2.774103052478543	12 T	S
+ % fs41: 235 62 80
+	235 T	-564.9416268110913	-747.8624003146868	S
+	-564.9416268110913	-747.8624003146868	62 T	S
+	-564.9416268110913	-747.8624003146868	80 T	S
+ % fs46: 176 89 10
+	176 T	-133.7610966677625	3.070741998233068	S
+	-133.7610966677625	3.070741998233068	89 T	S
+	-133.7610966677625	3.070741998233068	10 T	S
+ % fs51: 252 83 98
+	252 T	-.5943458269387640	112.6155700719174	S
+	-.5943458269387640	112.6155700719174	83 T	S
+	-.5943458269387640	112.6155700719174	98 T	S
+ % fs54: 280 102 37
+	280 T	223.7424149445046	-5.325299619407214	S
+	223.7424149445046	-5.325299619407214	102 T	S
+	223.7424149445046	-5.325299619407214	37 T	S
+ % fs56: 152 2 103
+	152 T	.1566561491892656	-1.739280947434196	S
+	.1566561491892656	-1.739280947434196	2 T	S
+	.1566561491892656	-1.739280947434196	103 T	S
+ % fs57: 132 47 104
+	132 T	-60.74774188166755	-811.9116019370612	S
+	-60.74774188166755	-811.9116019370612	47 T	S
+	-60.74774188166755	-811.9116019370612	104 T	S
+ % fs59: 168 82 104
+	168 T	-50.69390911410785	-907.9272170241968	S
+	-50.69390911410785	-907.9272170241968	82 T	S
+	-50.69390911410785	-907.9272170241968	104 T	S
+ % fs60: 233 105 51
+	233 T	-93.92866490330400	-140.2337939884933	S
+	-93.92866490330400	-140.2337939884933	105 T	S
+	-93.92866490330400	-140.2337939884933	51 T	S
+ % fs61: 240 67 107
+	240 T	15.63078827450880	471.5905889008201	S
+	15.63078827450880	471.5905889008201	67 T	S
+	15.63078827450880	471.5905889008201	107 T	S
+ % fs62: 223 54 108
+	223 T	-3.704735371623062	214.4414024495598	S
+	-3.704735371623062	214.4414024495598	54 T	S
+	-3.704735371623062	214.4414024495598	108 T	S
+ % fs63: 146 110 42
+	146 T	1.606448902215878	32.99185223134025	S
+	1.606448902215878	32.99185223134025	110 T	S
+	1.606448902215878	32.99185223134025	42 T	S
+ % fs68: 145 96 120
+	145 T	.7447210809163406	41.26395263251794	S
+	.7447210809163406	41.26395263251794	96 T	S
+	.7447210809163406	41.26395263251794	120 T	S
+ % fs75: 226 40 128
+	226 T	-6.708797859207014	7.589958008946353	S
+	-6.708797859207014	7.589958008946353	40 T	S
+	-6.708797859207014	7.589958008946353	128 T	S
+ % fs77: 279 78 128
+	279 T	-6.587408601042197	2.167434996272831	S
+	-6.587408601042197	2.167434996272831	78 T	S
+	-6.587408601042197	2.167434996272831	128 T	S
+ % fs78: 268 130 118
+	268 T	177.1596873047427	.4146093191602718	S
+	177.1596873047427	.4146093191602718	130 T	S
+	177.1596873047427	.4146093191602718	118 T	S
+ % fs79: 134 133 45
+	134 T	24.70367114645047	-1.653728839276420	S
+	24.70367114645047	-1.653728839276420	133 T	S
+	24.70367114645047	-1.653728839276420	45 T	S
+ % fs83: 215 138 110
+	215 T	-1.091080420824979	26.79561804464217	S
+	-1.091080420824979	26.79561804464217	138 T	S
+	-1.091080420824979	26.79561804464217	110 T	S
+ % fs86: 157 6 140
+	157 T	407.7101097021362	4.375480115457390	S
+	407.7101097021362	4.375480115457390	6 T	S
+	407.7101097021362	4.375480115457390	140 T	S
+ % fs88: 177 25 143
+	177 T	.0183294494687890	.0251024321849265	S
+	.0183294494687890	.0251024321849265	25 T	S
+	.0183294494687890	.0251024321849265	143 T	S
+ % fs89: 288 143 136
+	288 T	.0000703987400421	-.0003809996159578	S
+	.0000703987400421	-.0003809996159578	143 T	S
+	.0000703987400421	-.0003809996159578	136 T	S
+ % fs91: 161 21 144
+	161 T	-4.249087413181962	59.83648543389133	S
+	-4.249087413181962	59.83648543389133	21 T	S
+	-4.249087413181962	59.83648543389133	144 T	S
+ % fs97: 238 149 50
+	238 T	-16.55127679645621	-1.708634358602293	S
+	-16.55127679645621	-1.708634358602293	149 T	S
+	-16.55127679645621	-1.708634358602293	50 T	S
+ % fs101: 272 155 66
+	272 T	8.616583713485043	.1578335594830843	S
+	8.616583713485043	.1578335594830843	155 T	S
+	8.616583713485043	.1578335594830843	66 T	S
+ % fs108: 173 161 131
+	173 T	6.615073565535909	92.09103672003107	S
+	6.615073565535909	92.09103672003107	161 T	S
+	6.615073565535909	92.09103672003107	131 T	S
+ % fs109: 233 150 162
+	233 T	-7.699856420194362	-170.1654773382403	S
+	-7.699856420194362	-170.1654773382403	150 T	S
+	-7.699856420194362	-170.1654773382403	162 T	S
+ % fs110: 221 14 166
+	221 T	-.3702805813736531	7.993381762749671	S
+	-.3702805813736531	7.993381762749671	14 T	S
+	-.3702805813736531	7.993381762749671	166 T	S
+ % fs114: 205 171 23
+	205 T	.5932911913969609	-.0855903505715687	S
+	.5932911913969609	-.0855903505715687	171 T	S
+	.5932911913969609	-.0855903505715687	23 T	S
+ % fs118: 196 134 175
+	196 T	30.19057991438437	2.395830626939091	S
+	30.19057991438437	2.395830626939091	134 T	S
+	30.19057991438437	2.395830626939091	175 T	S
+ % fs120: 278 178 44
+	278 T	3.350336656721284	-.1620102415026718	S
+	3.350336656721284	-.1620102415026718	178 T	S
+	3.350336656721284	-.1620102415026718	44 T	S
+ % fs126: 244 75 186
+	244 T	895.9562260680257	61.07339380038013	S
+	895.9562260680257	61.07339380038013	75 T	S
+	895.9562260680257	61.07339380038013	186 T	S
+ % fs133: 270 48 191
+	270 T	-3.642547692891571	-72.73294899238027	S
+	-3.642547692891571	-72.73294899238027	48 T	S
+	-3.642547692891571	-72.73294899238027	191 T	S
+ % fs137: 243 192 185
+	243 T	11.57622480657546	179.8881580287425	S
+	11.57622480657546	179.8881580287425	192 T	S
+	11.57622480657546	179.8881580287425	185 T	S
+ % fs140: 247 194 126
+	247 T	11.51428782060602	-1.903561687577978	S
+	11.51428782060602	-1.903561687577978	194 T	S
+	11.51428782060602	-1.903561687577978	126 T	S
+ % fs141: 299 195 193
+	299 T	-260.4451749954534	-6.281537317864265	S
+	-260.4451749954534	-6.281537317864265	195 T	S
+	-260.4451749954534	-6.281537317864265	193 T	S
+ % fs143: 208 198 13
+	208 T	65.73063121979155	-42.40963122980911	S
+	65.73063121979155	-42.40963122980911	198 T	S
+	65.73063121979155	-42.40963122980911	13 T	S
+ % fs147: 209 70 200
+	209 T	-117.3215416590628	86.44051689868773	S
+	-117.3215416590628	86.44051689868773	70 T	S
+	-117.3215416590628	86.44051689868773	200 T	S
+ % fs149: 246 96 203
+	246 T	-.9425388198834218	46.21536679596282	S
+	-.9425388198834218	46.21536679596282	96 T	S
+	-.9425388198834218	46.21536679596282	203 T	S
+ % fs150: 271 17 205
+	271 T	1.043690892443045	.1747694843749875	S
+	1.043690892443045	.1747694843749875	17 T	S
+	1.043690892443045	.1747694843749875	205 T	S
+ % fs157: 211 210 39
+	211 T	2.426163629861934	-83.56629977210467	S
+	2.426163629861934	-83.56629977210467	210 T	S
+	2.426163629861934	-83.56629977210467	39 T	S
+ % fs159: 291 22 212
+	291 T	249.1702353274715	13.32783824463000	S
+	249.1702353274715	13.32783824463000	22 T	S
+	249.1702353274715	13.32783824463000	212 T	S
+ % fs161: 239 123 214
+	239 T	-49.76485679195070	-2.177433807071818	S
+	-49.76485679195070	-2.177433807071818	123 T	S
+	-49.76485679195070	-2.177433807071818	214 T	S
+ % fs163: 286 140 216
+	286 T	386.8801759249419	1.908862216986903	S
+	386.8801759249419	1.908862216986903	140 T	S
+	386.8801759249419	1.908862216986903	216 T	S
+ % fs164: 241 64 217
+	241 T	530.6416979424882	475.4733563003769	S
+	530.6416979424882	475.4733563003769	64 T	S
+	530.6416979424882	475.4733563003769	217 T	S
+ % fs165: 279 218 206
+	279 T	-4.704250073442956	.1037095428496859	S
+	-4.704250073442956	.1037095428496859	218 T	S
+	-4.704250073442956	.1037095428496859	206 T	S
+ % fs167: 282 219 160
+	282 T	.1962636752541656	-.0113671218805921	S
+	.1962636752541656	-.0113671218805921	219 T	S
+	.1962636752541656	-.0113671218805921	160 T	S
+ % fs178: 277 230 117
+	277 T	-.0249066413758375	-.0416664291719531	S
+	-.0249066413758375	-.0416664291719531	230 T	S
+	-.0249066413758375	-.0416664291719531	117 T	S
+ % fs184: 244 237 99
+	244 T	861.7305602736661	-.8965664902161000	S
+	861.7305602736661	-.8965664902161000	237 T	S
+	861.7305602736661	-.8965664902161000	99 T	S
+ % fs190: 292 196 249
+	292 T	50.31942345328331	-4.318534917518087	S
+	50.31942345328331	-4.318534917518087	196 T	S
+	50.31942345328331	-4.318534917518087	249 T	S
+ % fs192: 289 250 52
+	289 T	.0860278336837093	6.216159011179429	S
+	.0860278336837093	6.216159011179429	250 T	S
+	.0860278336837093	6.216159011179429	52 T	S
+ % fs194: 269 190 251
+	269 T	-769.8662501810849	37.14415486889207	S
+	-769.8662501810849	37.14415486889207	190 T	S
+	-769.8662501810849	37.14415486889207	251 T	S
+ % fs196: 290 183 254
+	290 T	1.031251406924943	-148.5689643090895	S
+	1.031251406924943	-148.5689643090895	183 T	S
+	1.031251406924943	-148.5689643090895	254 T	S
+ % fs200: 283 236 257
+	283 T	-73.21857992492362	3.617425689281729	S
+	-73.21857992492362	3.617425689281729	236 T	S
+	-73.21857992492362	3.617425689281729	257 T	S
+ % fs203: 285 260 5
+	285 T	-.0587296563696937	-.3475102837797937	S
+	-.0587296563696937	-.3475102837797937	260 T	S
+	-.0587296563696937	-.3475102837797937	5 T	S
+ % fs206: 280 264 268
+	280 T	184.3040320067024	-7.940560596020231	S
+	184.3040320067024	-7.940560596020231	264 T	S
+	184.3040320067024	-7.940560596020231	268 T	S
+ % fs209: 159 111 19 14
+	159 T	.5100016663555531	12.12916449967827	S
+	.5100016663555531	12.12916449967827	111 T	S
+	.5100016663555531	12.12916449967827	1.214698696271320	10.48457673319878	S
+	1.214698696271320	10.48457673319878	19 T	S
+	1.214698696271320	10.48457673319878	14 T	S
+ % fs210: 129 15 53 87
+	129 T	-6.499519281030756	139.5734056885678	S
+	-6.499519281030756	139.5734056885678	-31.97580209209284	147.1026866023101	S
+	-31.97580209209284	147.1026866023101	15 T	S
+	-31.97580209209284	147.1026866023101	53 T	S
+	-6.499519281030756	139.5734056885678	87 T	S
+ % fs212: 77 73 0 72
+	77 T	-341.0372462068909	-87.92891170056110	S
+	-341.0372462068909	-87.92891170056110	-328.9468459362247	-11.56646067067262	S
+	-328.9468459362247	-11.56646067067262	73 T	S
+	-328.9468459362247	-11.56646067067262	0 T	S
+	-341.0372462068909	-87.92891170056110	72 T	S
+ % fs225: 216 141 97 124
+	216 T	361.0777676077928	-17.86657731342890	S
+	361.0777676077928	-17.86657731342890	373.7820277564744	-156.1083245561862	S
+	373.7820277564744	-156.1083245561862	141 T	S
+	373.7820277564744	-156.1083245561862	97 T	S
+	361.0777676077928	-17.86657731342890	124 T	S
+ % fs229: 179 9 1 149
+	179 T	-30.24014685103046	.9811459555496593	S
+	-30.24014685103046	.9811459555496593	9 T	S
+	-30.24014685103046	.9811459555496593	-29.30715039324027	2.331857253043843	S
+	-29.30715039324027	2.331857253043843	1 T	S
+	-29.30715039324027	2.331857253043843	149 T	S
+ % fs231: 167 147 151 46
+	167 T	-93.58510261581513	-9.071646917996831	S
+	-93.58510261581513	-9.071646917996831	-91.70040322379272	-22.77612663342178	S
+	-91.70040322379272	-22.77612663342178	147 T	S
+	-91.70040322379272	-22.77612663342178	151 T	S
+	-93.58510261581513	-9.071646917996831	46 T	S
+ % fs233: 262 158 139 74
+	262 T	-1.119981561100912	-6.753557861647312	S
+	-1.119981561100912	-6.753557861647312	-2.564390997654832	-6.686820724048153	S
+	-2.564390997654832	-6.686820724048153	158 T	S
+	-2.564390997654832	-6.686820724048153	139 T	S
+	-1.119981561100912	-6.753557861647312	74 T	S
+ % fs242: 281 190 201 121
+	281 T	-650.0720786309903	-65.41617967063867	S
+	-650.0720786309903	-65.41617967063867	-658.8140375848533	-20.10957923072250	S
+	-658.8140375848533	-20.10957923072250	190 T	S
+	-658.8140375848533	-20.10957923072250	201 T	S
+	-650.0720786309903	-65.41617967063867	121 T	S
+ % fs250: 293 228 180 222
+	293 T	-2.290708106056570	.2285591005235281	S
+	-2.290708106056570	.2285591005235281	-2.866414774211384	.4551958940081406	S
+	-2.866414774211384	.4551958940081406	228 T	S
+	-2.866414774211384	.4551958940081406	180 T	S
+	-2.290708106056570	.2285591005235281	222 T	S
+ % fs255: 284 89 169 258
+	284 T	-121.1294234545153	-1.614004289977134	S
+	-121.1294234545153	-1.614004289977134	89 T	S
+	-121.1294234545153	-1.614004289977134	-119.8968897475277	-.0770925896036421	S
+	-119.8968897475277	-.0770925896036421	169 T	S
+	-119.8968897475277	-.0770925896036421	258 T	S
+ % fs258: 294 273 94 256
+	294 T	8.296577271610618	-13.13283709874945	S
+	8.296577271610618	-13.13283709874945	1.737868147534221	-13.19714806197440	S
+	1.737868147534221	-13.19714806197440	273 T	S
+	1.737868147534221	-13.19714806197440	94 T	S
+	8.296577271610618	-13.13283709874945	256 T	S
+ % fs268: 265 207 181 125 71
+	265 T	81.33907917415440	-373.0896825038381	S
+	81.33907917415440	-373.0896825038381	5.875754363367400	-383.7490976253209	S
+	5.875754363367400	-383.7490976253209	207 T	S
+	5.875754363367400	-383.7490976253209	-22.01127234172094	-348.1066558426060	S
+	-22.01127234172094	-348.1066558426060	181 T	S
+	-22.01127234172094	-348.1066558426060	125 T	S
+	81.33907917415440	-373.0896825038381	71 T	S
+ % fs269: 249 114 248 61 198
+	249 T	55.76734574432307	1.072453944139200	S
+	55.76734574432307	1.072453944139200	114 T	S
+	55.76734574432307	1.072453944139200	69.63696336784537	4.303950817883878	S
+	69.63696336784537	4.303950817883878	248 T	S
+	69.63696336784537	4.303950817883878	80.79903806585083	-7.617668581192637	S
+	80.79903806585083	-7.617668581192637	61 T	S
+	80.79903806585083	-7.617668581192637	198 T	S
+ % fs275: 26 136
+	26 T	136 T	S
+ % fs280: 182 177
+	182 T	177 T	S
+ % fs282: 29 182
+	29 T	182 T	S
+ % fs283: 122 88
+	122 T	88 T	S
+ % fs285: 122 277
+	122 T	277 T	S
+ % fs286: 101 219
+	101 T	219 T	S
+ % fs287: 285 184
+	285 T	184 T	S
+ % fs290: 230 127
+	230 T	127 T	S
+ % fs291: 101 25
+	101 T	25 T	S
+ % fs292: 5 88
+	5 T	88 T	S
+ % fs294: 142 152
+	142 T	152 T	S
+ % fs296: 189 23
+	189 T	23 T	S
+ % fs297: 52 33
+	52 T	33 T	S
+ % fs299: 260 220
+	260 T	220 T	S
+ % fs300: 100 29
+	100 T	29 T	S
+ % fs303: 189 160
+	189 T	160 T	S
+ % fs306: 232 17
+	232 T	17 T	S
+ % fs307: 228 218
+	228 T	218 T	S
+ % fs308: 103 12
+	103 T	12 T	S
+ % fs312: 172 255
+	172 T	255 T	S
+ % fs313: 30 232
+	30 T	232 T	S
+ % fs317: 231 170
+	231 T	170 T	S
+ % fs318: 164 100
+	164 T	100 T	S
+ % fs323: 126 272
+	126 T	272 T	S
+ % fs324: 142 184
+	142 T	184 T	S
+ % fs325: 33 166
+	33 T	166 T	S
+ % fs327: 83 131
+	83 T	131 T	S
+ % fs328: 109 247
+	109 T	247 T	S
+ % fs330: 79 31
+	79 T	31 T	S
+ % fs332: 207 137
+	207 T	137 T	S
+ % fs339: 94 262
+	94 T	262 T	S
+ % fs342: 74 165
+	74 T	165 T	S
+ % fs343: 2 297
+	2 T	297 T	S
+ % fs345: 222 127
+	222 T	127 T	S
+ % fs346: 145 42
+	145 T	42 T	S
+ % fs347: 278 155
+	278 T	155 T	S
+ % fs348: 65 91
+	65 T	91 T	S
+ % fs349: 48 93
+	48 T	93 T	S
+ % fs350: 206 91
+	206 T	91 T	S
+ % fs352: 250 287
+	250 T	287 T	S
+ % fs353: 78 50
+	78 T	50 T	S
+ % fs356: 10 298
+	10 T	298 T	S
+ % fs361: 287 164
+	287 T	164 T	S
+ % fs363: 45 135
+	45 T	135 T	S
+ % fs365: 246 231
+	246 T	231 T	S
+ % fs367: 46 258
+	46 T	258 T	S
+ % fs369: 148 111
+	148 T	111 T	S
+ % fs370: 112 245
+	112 T	245 T	S
+ % fs371: 214 224
+	214 T	224 T	S
+ % fs372: 135 109
+	135 T	109 T	S
+ % fs376: 76 215
+	76 T	215 T	S
+ % fs379: 212 102
+	212 T	102 T	S
+ % fs388: 290 150
+	290 T	150 T	S
+ % fs389: 239 9
+	239 T	9 T	S
+ % fs390: 95 27
+	95 T	27 T	S
+ % fs391: 43 236
+	43 T	236 T	S
+ % fs396: 296 113
+	296 T	113 T	S
+ % fs397: 76 148
+	76 T	148 T	S
+ % fs398: 211 191
+	211 T	191 T	S
+ % fs402: 84 3
+	84 T	3 T	S
+ % fs403: 170 21
+	170 T	21 T	S
+ % fs406: 199 227
+	199 T	227 T	S
+ % fs408: 183 163
+	183 T	163 T	S
+ % fs409: 85 185
+	85 T	185 T	S
+ % fs410: 259 59
+	259 T	59 T	S
+ % fs411: 224 43
+	224 T	43 T	S
+ % fs414: 163 39
+	163 T	39 T	S
+ % fs417: 11 201
+	11 T	201 T	S
+ % fs418: 108 34
+	108 T	34 T	S
+ % fs422: 192 223
+	192 T	223 T	S
+ % fs427: 86 295
+	86 T	295 T	S
+ % fs429: 208 24
+	208 T	24 T	S
+ % fs430: 252 129
+	252 T	129 T	S
+ % fs431: 81 175
+	81 T	175 T	S
+ % fs437: 116 55
+	116 T	55 T	S
+ % fs438: 86 130
+	86 T	130 T	S
+ % fs439: 266 156
+	266 T	156 T	S
+ % fs440: 113 6
+	113 T	6 T	S
+ % fs441: 8 204
+	8 T	204 T	S
+ % fs443: 87 243
+	87 T	243 T	S
+ % fs445: 162 263
+	162 T	263 T	S
+ % fs446: 167 257
+	167 T	257 T	S
+ % fs447: 49 93
+	49 T	93 T	S
+ % fs453: 84 56
+	84 T	56 T	S
+ % fs455: 174 202
+	174 T	202 T	S
+ % fs456: 58 266
+	58 T	266 T	S
+ % fs460: 298 3
+	298 T	3 T	S
+ % fs463: 58 174
+	58 T	174 T	S
+ % fs464: 73 95
+	73 T	95 T	S
+ % fs466: 273 59
+	273 T	59 T	S
+ % fs467: 253 263
+	253 T	263 T	S
+ % fs468: 193 0
+	193 T	0 T	S
+ % fs474: 274 85
+	274 T	85 T	S
+ % fs475: 251 199
+	251 T	199 T	S
+ % fs481: 295 61
+	295 T	61 T	S
+ % fs484: 225 229
+	225 T	229 T	S
+ % fs486: 267 80
+	267 T	80 T	S
+ % fs487: 124 22
+	124 T	22 T	S
+ % fs490: 16 8
+	16 T	8 T	S
+ % fs493: 261 4
+	261 T	4 T	S
+ % fs494: 99 154
+	99 T	154 T	S
+ % fs496: 67 156
+	67 T	156 T	S
+ % fs498: 213 4
+	213 T	4 T	S
+ % fs501: 56 299
+	56 T	299 T	S
+ % fs505: 227 213
+	227 T	213 T	S
+ % fs506: 116 34
+	116 T	34 T	S
+ % fs507: 200 15
+	200 T	15 T	S
+ % fs513: 264 28
+	264 T	28 T	S
+ % fs521: 234 186
+	234 T	186 T	S
+ % fs527: 92 7
+	92 T	7 T	S
+ % fs528: 202 55
+	202 T	55 T	S
+ % fs531: 154 92
+	154 T	92 T	S
+ % fs535: 41 105
+	41 T	105 T	S
+ % fs536: 204 107
+	204 T	107 T	S
+ % fs538: 68 54
+	68 T	54 T	S
+ % fs539: 125 253
+	125 T	253 T	S
+ % fs541: 82 119
+	82 T	119 T	S
+ % fs542: 172 112
+	172 T	112 T	S
+ % fs545: 153 274
+	153 T	274 T	S
+ % fs547: 275 188
+	275 T	188 T	S
+ % fs548: 188 137
+	188 T	137 T	S
+ % fs549: 275 197
+	275 T	197 T	S
+ % fs550: 106 255
+	106 T	255 T	S
+ % fs552: 296 229
+	296 T	229 T	S
+ % fs554: 281 20
+	281 T	20 T	S
+ % fs558: 63 11
+	63 T	11 T	S
+ % fs559: 269 187
+	269 T	187 T	S
+ % fs560: 90 32
+	90 T	32 T	S
+ % fs566: 32 276
+	32 T	276 T	S
+ % fs567: 62 132
+	62 T	132 T	S
+ % fs570: 237 35
+	237 T	35 T	S
+ % fs572: 276 69
+	276 T	69 T	S
+  (Euclidean SMT:  300 points,  length = 10333.9173435981180,  2.98 seconds)
+EndPlot
+
+% @0 Euclidean SMT
+% N M Nodes LPs P1CPU P2CPU TotCPU
+% @1 300 574 1 206 2.12 0.86 2.98
+% Z RootZ %Gap RootLPs RootCPU RedMST
+% @2 10333.9173435981180 103339173435981184.000000 0.00000 206 0.86 2.1133
+% InitPRows InitPNZ InitLPRows InitLPNZ
+% @3 654 3215 301 2657
+% RootPRows RootPNZ RootLPRows RootLPNZ
+% @4 1959 101664 403 11367
+% FinalPRows FinalPNZ FinalLPRows FinalLPNZ
+% @5 1959 101664 403 11367
+% SMTFSTs SMTAvgFSTSz SMTMaxFSTSz #2FSTs #3FSTs ... #10FSTS #>10FSTs
+% @6 208 2.437500 5 132 63 11 2 0 0 0 0 0 0
